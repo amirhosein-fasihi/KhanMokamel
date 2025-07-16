@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - فروشگاه مکمل‌های بدنسازی ایران{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">خانه</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('products') }}">محصولات</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6 mb-4">
+            <div class="product-image-container">
+                <img src="{{ product.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
+                     class="img-fluid rounded shadow" alt="{{ product.name }}" id="mainImage">
+            </div>
+            
+            <!-- Thumbnail Images -->
+            {% if product.gallery %}
+            <div class="row mt-3">
+                {% for image in product.gallery %}
+                <div class="col-3">
+                    <img src="{{ image }}" class="img-fluid rounded thumbnail-image" 
+                         alt="{{ product.name }}" onclick="changeMainImage(this.src)">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="product-details">
+                <h1 class="fw-bold mb-3">{{ product.name }}</h1>
+                
+                <!-- Rating -->
+                {% if product.rating %}
+                <div class="mb-3">
+                    {% for i in range(5) %}
+                        {% if i < product.rating %}
+                            <i class="fas fa-star text-warning"></i>
+                        {% else %}
+                            <i class="far fa-star text-muted"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="text-muted ms-2">({{ product.reviews_count or 0 }} نظر)</span>
+                </div>
+                {% endif %}
+
+                <!-- Price -->
+                <div class="price-section mb-4">
+                    {% if product.discount %}
+                        <div class="original-price text-muted text-decoration-line-through fs-5">
+                            {{ "{:,}".format(product.original_price) }} تومان
+                        </div>
+                        <div class="current-price fw-bold text-primary" style="font-size: 2rem;">
+                            {{ "{:,}".format(product.price) }} تومان
+                        </div>
+                        <span class="badge bg-danger fs-6">{{ product.discount }}% تخفیف</span>
+                    {% else %}
+                        <div class="current-price fw-bold text-primary" style="font-size: 2rem;">
+                            {{ "{:,}".format(product.price) }} تومان
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Stock Status -->
+                <div class="stock-status mb-4">
+                    {% if product.stock > 0 %}
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-check me-1"></i>
+                            موجود در انبار ({{ product.stock }} عدد)
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">
+                            <i class="fas fa-times me-1"></i>
+                            ناموجود
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Add to Cart Form -->
+                <form method="POST" action="{{ url_for('add_to_cart') }}" class="mb-4">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <label for="quantity" class="form-label">تعداد:</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" 
+                                   value="1" min="1" max="{{ product.stock or 10 }}">
+                        </div>
+                        <div class="col-md-8">
+                            {% if product.stock > 0 %}
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    افزودن به سبد خرید
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
+                                    <i class="fas fa-times me-2"></i>
+                                    ناموجود
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Product Features -->
+                {% if product.features %}
+                <div class="product-features mb-4">
+                    <h5 class="fw-bold mb-3">ویژگی‌های محصول:</h5>
+                    <ul class="list-unstyled">
+                        {% for feature in product.features %}
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            {{ feature }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Share -->
+                <div class="share-section">
+                    <h6 class="fw-bold mb-2">اشتراک‌گذاری:</h6>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-link"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Description -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#description">توضیحات</a>
+                        </li>
+                        {% if product.specifications %}
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#specifications">مشخصات فنی</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#reviews">نظرات</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Description Tab -->
+                        <div class="tab-pane fade show active" id="description">
+                            <p class="lead">{{ product.description }}</p>
+                            {% if product.long_description %}
+                                <div class="mt-4">{{ product.long_description | safe }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Specifications Tab -->
+                        {% if product.specifications %}
+                        <div class="tab-pane fade" id="specifications">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    {% for spec_name, spec_value in product.specifications.items() %}
+                                    <tr>
+                                        <th class="w-25">{{ spec_name }}</th>
+                                        <td>{{ spec_value }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane fade" id="reviews">
+                            <div class="text-center py-4">
+                                <i class="fas fa-comments text-muted" style="font-size: 3rem;"></i>
+                                <h5 class="text-muted mt-3">هنوز نظری ثبت نشده است</h5>
+                                <p class="text-muted">اولین نفری باشید که نظر می‌دهید.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">محصولات مرتبط</h3>
+            <div class="row g-4">
+                {% for related in related_products %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <img src="{{ related.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
+                             class="card-img-top" alt="{{ related.name }}" style="height: 200px; object-fit: cover;">
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">{{ related.name }}</h6>
+                            <p class="card-text text-muted small flex-grow-1">
+                                {{ related.description[:80] }}{% if related.description|length > 80 %}...{% endif %}
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="fw-bold text-primary">{{ "{:,}".format(related.price) }} تومان</span>
+                                <a href="{{ url_for('product_detail', product_id=related.id) }}" class="btn btn-primary btn-sm">
+                                    مشاهده
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function changeMainImage(src) {
+    document.getElementById('mainImage').src = src;
+}
+
+// Quantity input validation
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity');
+    if (quantityInput) {
+        quantityInput.addEventListener('change', function() {
+            const value = parseInt(this.value);
+            const max = parseInt(this.max);
+            const min = parseInt(this.min);
+            
+            if (value > max) {
+                this.value = max;
+            } else if (value < min) {
+                this.value = min;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

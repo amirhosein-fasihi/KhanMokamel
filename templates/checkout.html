@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}تسویه حساب - فروشگاه مکمل‌های بدنسازی ایران{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">تسویه حساب</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">خانه</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cart') }}">سبد خرید</a></li>
+                    <li class="breadcrumb-item active">تسویه حساب</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Checkout Steps -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="checkout-steps d-flex justify-content-center">
+                <div class="step completed">
+                    <div class="step-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <span>سبد خرید</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step active">
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <span>پرداخت</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span>تکمیل</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('place_order') }}">
+        <div class="row">
+            <!-- Checkout Form -->
+            <div class="col-lg-8">
+                <!-- Shipping Information -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-truck me-2"></i>
+                            اطلاعات ارسال
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">نام و نام خانوادگی *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       value="{{ session.user_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">شماره تماس *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       placeholder="09123456789" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="shipping_address" class="form-label">آدرس کامل *</label>
+                            <textarea class="form-control" id="shipping_address" name="shipping_address" 
+                                      rows="3" placeholder="آدرس کامل شامل استان، شهر، خیابان، پلاک و کد پستی" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="postal_code" class="form-label">کد پستی</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code" 
+                                       placeholder="1234567890">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="delivery_time" class="form-label">زمان ترجیحی تحویل</label>
+                                <select class="form-select" id="delivery_time" name="delivery_time">
+                                    <option value="morning">صبح (۸ تا ۱۲)</option>
+                                    <option value="afternoon">بعدازظهر (۱۲ تا ۱۸)</option>
+                                    <option value="evening">عصر (۱۸ تا ۲۱)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-credit-card me-2"></i>
+                            روش پرداخت
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option">
+                                    <input type="radio" class="form-check-input" id="online_payment" 
+                                           name="payment_method" value="online" checked>
+                                    <label class="form-check-label w-100" for="online_payment">
+                                        <div class="payment-card p-3 border rounded">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-credit-card text-primary me-3 fs-4"></i>
+                                                <div>
+                                                    <h6 class="mb-1">پرداخت آنلاین</h6>
+                                                    <small class="text-muted">پرداخت امن با درگاه بانکی</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option">
+                                    <input type="radio" class="form-check-input" id="cash_payment" 
+                                           name="payment_method" value="cash">
+                                    <label class="form-check-label w-100" for="cash_payment">
+                                        <div class="payment-card p-3 border rounded">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-money-bill-wave text-success me-3 fs-4"></i>
+                                                <div>
+                                                    <h6 class="mb-1">پرداخت در محل</h6>
+                                                    <small class="text-muted">پرداخت نقدی هنگام تحویل</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Notes -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-sticky-note me-2"></i>
+                            توضیحات سفارش (اختیاری)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control" name="order_notes" rows="3" 
+                                  placeholder="توضیحات اضافی در مورد سفارش، درخواست‌های ویژه و..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 2rem;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list-alt me-2"></i>
+                            خلاصه سفارش
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Order Items -->
+                        <div class="order-items mb-4">
+                            {% for item in cart_items %}
+                            <div class="order-item d-flex align-items-center mb-3">
+                                <img src="{{ item.product.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
+                                     class="rounded me-3" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ item.product.name }}</h6>
+                                    <small class="text-muted">{{ item.quantity }} × {{ "{:,}".format(item.product.price) }} تومان</small>
+                                </div>
+                                <span class="fw-bold">{{ "{:,}".format(item.total) }} تومان</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <hr>
+
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>جمع محصولات:</span>
+                                <span>{{ "{:,}".format(total_price) }} تومان</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>هزینه ارسال:</span>
+                                <span class="text-success">رایگان</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>مالیات:</span>
+                                <span>{{ "{:,}".format((total_price * 0.09) | round | int) }} تومان</span>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="fw-bold fs-5">مبلغ نهایی:</span>
+                                <span class="fw-bold fs-5 text-primary">
+                                    {{ "{:,}".format((total_price * 1.09) | round | int) }} تومان
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-check me-2"></i>
+                            تکمیل سفارش
+                        </button>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-lock me-1"></i>
+                                پرداخت شما کاملاً امن است
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            this.value = value;
+        });
+    }
+
+    // Postal code formatting
+    const postalCodeInput = document.getElementById('postal_code');
+    if (postalCodeInput) {
+        postalCodeInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+            this.value = value;
+        });
+    }
+
+    // Payment method selection
+    const paymentOptions = document.querySelectorAll('input[name="payment_method"]');
+    paymentOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            // Remove active class from all payment cards
+            document.querySelectorAll('.payment-card').forEach(card => {
+                card.classList.remove('border-primary', 'bg-light');
+            });
+            
+            // Add active class to selected payment card
+            if (this.checked) {
+                const card = this.closest('.payment-option').querySelector('.payment-card');
+                card.classList.add('border-primary', 'bg-light');
+            }
+        });
+    });
+
+    // Initialize first payment method as selected
+    const firstPaymentOption = document.querySelector('input[name="payment_method"]:checked');
+    if (firstPaymentOption) {
+        firstPaymentOption.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+{% endblock %}

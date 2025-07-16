@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}پنل مدیریت - فروشگاه مکمل‌های بدنسازی ایران{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">پنل مدیریت</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">خانه</a></li>
+                    <li class="breadcrumb-item active">پنل مدیریت</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل محصولات</h6>
+                            <h3 class="mb-0">{{ stats.total_products }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-box fs-2 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل سفارشات</h6>
+                            <h3 class="mb-0">{{ stats.total_orders }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fs-2 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل کاربران</h6>
+                            <h3 class="mb-0">{{ stats.total_users }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fs-2 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">سفارشات در انتظار</h6>
+                            <h3 class="mb-0">{{ stats.pending_orders }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fs-2 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        منوی مدیریت
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#dashboard" class="list-group-item list-group-item-action active" data-tab="dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            داشبورد
+                        </a>
+                        <a href="#orders" class="list-group-item list-group-item-action" data-tab="orders">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            مدیریت سفارشات
+                        </a>
+                        <a href="#products" class="list-group-item list-group-item-action" data-tab="products">
+                            <i class="fas fa-box me-2"></i>
+                            مدیریت محصولات
+                        </a>
+                        <a href="#users" class="list-group-item list-group-item-action" data-tab="users">
+                            <i class="fas fa-users me-2"></i>
+                            مدیریت کاربران
+                        </a>
+                        <a href="#reports" class="list-group-item list-group-item-action" data-tab="reports">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            گزارشات
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-lg-9">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard-tab">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            آخرین فعالیت‌ها
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">آخرین سفارشات</h6>
+                                {% if recent_orders %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>شماره</th>
+                                                    <th>مبلغ</th>
+                                                    <th>وضعیت</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for order in recent_orders[-5:] %}
+                                                <tr>
+                                                    <td>#{{ order.id[:8] }}</td>
+                                                    <td>{{ "{:,}".format(order.total_price) }}</td>
+                                                    <td>
+                                                        {% if order.status == 'pending' %}
+                                                            <span class="badge bg-warning">در انتظار</span>
+                                                        {% elif order.status == 'processing' %}
+                                                            <span class="badge bg-info">در حال پردازش</span>
+                                                        {% elif order.status == 'shipped' %}
+                                                            <span class="badge bg-primary">ارسال شده</span>
+                                                        {% elif order.status == 'delivered' %}
+                                                            <span class="badge bg-success">تحویل شده</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">هنوز سفارشی ثبت نشده است.</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">عملیات سریع</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        افزودن محصول جدید
+                                    </button>
+                                    <button class="btn btn-success" onclick="showAddCategoryModal()">
+                                        <i class="fas fa-tags me-2"></i>
+                                        افزودن دسته‌بندی
+                                    </button>
+                                    <button class="btn btn-info">
+                                        <i class="fas fa-download me-2"></i>
+                                        دانلود گزارش
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-content" id="orders-tab">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            مدیریت سفارشات
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_orders %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>شماره سفارش</th>
+                                            <th>تاریخ</th>
+                                            <th>مبلغ</th>
+                                            <th>وضعیت</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in recent_orders %}
+                                        <tr>
+                                            <td class="fw-bold">#{{ order.id[:8] }}</td>
+                                            <td>{{ order.created_at[:10] }}</td>
+                                            <td>{{ "{:,}".format(order.total_price) }} تومان</td>
+                                            <td>
+                                                {% if order.status == 'pending' %}
+                                                    <span class="badge bg-warning">در انتظار پردازش</span>
+                                                {% elif order.status == 'processing' %}
+                                                    <span class="badge bg-info">در حال پردازش</span>
+                                                {% elif order.status == 'shipped' %}
+                                                    <span class="badge bg-primary">ارسال شده</span>
+                                                {% elif order.status == 'delivered' %}
+                                                    <span class="badge bg-success">تحویل داده شده</span>
+                                                {% elif order.status == 'cancelled' %}
+                                                    <span class="badge bg-danger">لغو شده</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('update_order_status') }}" class="d-inline">
+                                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                                    <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>در انتظار</option>
+                                                        <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>در حال پردازش</option>
+                                                        <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>ارسال شده</option>
+                                                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>تحویل شده</option>
+                                                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                                                    </select>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-cart text-muted" style="font-size: 4rem;"></i>
+                                <h4 class="text-muted mt-3">هنوز سفارشی ثبت نشده است</h4>
+                                <p class="text-muted">وقتی مشتریان سفارش دهند، اینجا نمایش داده می‌شود.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-content" id="products-tab">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-box me-2"></i>
+                            مدیریت محصولات
+                        </h5>
+                        <button class="btn btn-primary" onclick="showAddProductModal()">
+                            <i class="fas fa-plus me-2"></i>
+                            افزودن محصول
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <i class="fas fa-tools text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="text-muted mt-3">مدیریت محصولات</h4>
+                            <p class="text-muted">این بخش در نسخه کامل پیاده‌سازی خواهد شد.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content" id="users-tab">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users me-2"></i>
+                            مدیریت کاربران
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <i class="fas fa-users text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="text-muted mt-3">مدیریت کاربران</h4>
+                            <p class="text-muted">این بخش در نسخه کامل پیاده‌سازی خواهد شد.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports-tab">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            گزارشات
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line text-muted" style="font-size: 4rem;"></i>
+                            <h4 class="text-muted mt-3">گزارشات و آمار</h4>
+                            <p class="text-muted">این بخش در نسخه کامل پیاده‌سازی خواهد شد.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">افزودن محصول جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    این قسمت در نسخه کامل پیاده‌سازی خواهد شد.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">افزودن دسته‌بندی جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    این قسمت در نسخه کامل پیاده‌سازی خواهد شد.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab functionality
+    const tabLinks = document.querySelectorAll('[data-tab]');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all links and contents
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked link
+            this.classList.add('active');
+            
+            // Show corresponding content
+            const tabId = this.getAttribute('data-tab') + '-tab';
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+});
+
+function showAddProductModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    modal.show();
+}
+
+function showAddCategoryModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

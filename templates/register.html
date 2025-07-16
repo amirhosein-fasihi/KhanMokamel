@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}ثبت نام - فروشگاه مکمل‌های بدنسازی ایران{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        ایجاد حساب کاربری جدید
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" id="registerForm">
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-bold">نام و نام خانوادگی *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       placeholder="نام و نام خانوادگی خود را وارد کنید" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                نام و نام خانوادگی الزامی است.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-bold">ایمیل *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope text-muted"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="example@email.com" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                لطفاً یک ایمیل معتبر وارد کنید.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">رمز عبور *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="حداقل ۶ کاراکتر" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                رمز عبور باید حداقل ۶ کاراکتر باشد.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label fw-bold">تکرار رمز عبور *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                       placeholder="رمز عبور را مجدداً وارد کنید" required>
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                تکرار رمز عبور مطابقت ندارد.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree_terms" name="agree_terms" required>
+                                <label class="form-check-label" for="agree_terms">
+                                    با <a href="#" class="text-primary">شرایط و قوانین</a> و 
+                                    <a href="#" class="text-primary">حریم خصوصی</a> موافقم.
+                                </label>
+                                <div class="invalid-feedback">
+                                    پذیرش شرایط و قوانین الزامی است.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                                <label class="form-check-label" for="newsletter">
+                                    مایل به دریافت خبرنامه و پیشنهادات ویژه هستم.
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-user-plus me-2"></i>
+                            ثبت نام
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0 text-muted">
+                        قبلاً ثبت نام کرده‌اید؟ 
+                        <a href="{{ url_for('login') }}" class="text-primary text-decoration-none fw-bold">
+                            وارد شوید
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3 text-center">امنیت اطلاعات شما</h6>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="fas fa-shield-alt text-success mb-2 fs-4"></i>
+                            <p class="small text-muted">حفاظت از اطلاعات</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-lock text-primary mb-2 fs-4"></i>
+                            <p class="small text-muted">رمزگذاری امن</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-user-secret text-info mb-2 fs-4"></i>
+                            <p class="small text-muted">حریم خصوصی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const agreeTermsInput = document.getElementById('agree_terms');
+
+    // Toggle password visibility
+    function setupPasswordToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+
+        if (toggle && input) {
+            toggle.addEventListener('click', function() {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                if (type === 'password') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+    }
+
+    setupPasswordToggle('togglePassword', 'password');
+    setupPasswordToggle('toggleConfirmPassword', 'confirm_password');
+
+    // Real-time validation
+    nameInput.addEventListener('input', function() {
+        if (this.value.trim().length >= 2) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+
+    emailInput.addEventListener('input', function() {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(this.value)) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+
+    passwordInput.addEventListener('input', function() {
+        if (this.value.length >= 6) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+        
+        // Also validate confirm password if it has a value
+        if (confirmPasswordInput.value) {
+            validateConfirmPassword();
+        }
+    });
+
+    function validateConfirmPassword() {
+        if (confirmPasswordInput.value === passwordInput.value && confirmPasswordInput.value.length >= 6) {
+            confirmPasswordInput.classList.remove('is-invalid');
+            confirmPasswordInput.classList.add('is-valid');
+            return true;
+        } else {
+            confirmPasswordInput.classList.remove('is-valid');
+            confirmPasswordInput.classList.add('is-invalid');
+            return false;
+        }
+    }
+
+    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Name validation
+        if (nameInput.value.trim().length < 2) {
+            nameInput.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput.value)) {
+            emailInput.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // Password validation
+        if (passwordInput.value.length < 6) {
+            passwordInput.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // Confirm password validation
+        if (!validateConfirmPassword()) {
+            isValid = false;
+        }
+
+        // Terms agreement validation
+        if (!agreeTermsInput.checked) {
+            agreeTermsInput.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            agreeTermsInput.classList.remove('is-invalid');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    // Terms checkbox validation
+    agreeTermsInput.addEventListener('change', function() {
+        if (this.checked) {
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}
