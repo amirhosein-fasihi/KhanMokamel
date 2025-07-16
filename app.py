@@ -1,29 +1,28 @@
 import os
-import json
 import logging
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import uuid
-from utils.data_manager import DataManager
+from database_service import DatabaseService
 from utils.auth import login_required, admin_required
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key_change_in_production")
-CORS(app)
+# This will be imported by main.py - don't create app instance here
 
-# Initialize data manager
-dm = DataManager()
+# Database service
+db_service = DatabaseService()
 
-@app.route('/')
+def register_routes(app):
+    """Register all routes with the Flask app"""
+    
+    @app.route('/')
 def index():
     """صفحه اصلی فروشگاه"""
-    categories = dm.get_categories()
-    featured_products = dm.get_featured_products()
+    categories = db_service.get_categories()
+    featured_products = db_service.get_featured_products()
     return render_template('index.html', categories=categories, products=featured_products)
 
 @app.route('/products')
@@ -32,39 +31,42 @@ def products():
     category_id = request.args.get('category')
     search_query = request.args.get('search', '')
     
-    all_products = dm.get_products()
-    categories = dm.get_categories()
-    
-    # Filter by category
+    # Convert category_id to int if provided
     if category_id:
-        all_products = [p for p in all_products if p.get('category_id') == category_id]
+        try:
+            category_id = int(category_id)
+        except ValueError:
+            category_id = None
     
-    # Filter by search query
+    # Get products with filtering
     if search_query:
-        all_products = [p for p in all_products if search_query.lower() in p.get('name', '').lower() or 
-                       search_query.lower() in p.get('description', '').lower()]
+        all_products = db_service.search_products(search_query)
+    else:
+        all_products = db_service.get_products(category_id=category_id)
+    
+    categories = db_service.get_categories()
     
     return render_template('products.html', products=all_products, categories=categories, 
-                         selected_category=category_id, search_query=search_query)
+                         selected_category=str(category_id) if category_id else None, search_query=search_query)
 
-@app.route('/product/<product_id>')
+@app.route('/product/<int:product_id>')
 def product_detail(product_id):
     """صفحه جزئیات محصول"""
-    product = dm.get_product(product_id)
+    product = db_service.get_product(product_id)
     if not product:
         flash('محصول مورد نظر یافت نشد.', 'error')
         return redirect(url_for('products'))
     
-    related_products = dm.get_related_products(product['category_id'], product_id)
+    related_products = db_service.get_related_products(int(product['category_id']), product_id)
     return render_template('product_detail.html', product=product, related_products=related_products)
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     """افزودن محصول به سبد خرید"""
-    product_id = request.form.get('product_id')
+    product_id = int(request.form.get('product_id'))
     quantity = int(request.form.get('quantity', 1))
     
-    product = dm.get_product(product_id)
+    product = db_service.get_product(product_id)
     if not product:
         flash('محصول مورد نظر یافت نشد.', 'error')
         return redirect(url_for('products'))
@@ -73,11 +75,12 @@ def add_to_cart():
     if 'cart' not in session:
         session['cart'] = {}
     
-    # Add or update product in cart
-    if product_id in session['cart']:
-        session['cart'][product_id] += quantity
+    # Add or update product in cart (store as string for session compatibility)
+    product_id_str = str(product_id)
+    if product_id_str in session['cart']:
+        session['cart'][product_id_str] += quantity
     else:
-        session['cart'][product_id] = quantity
+        session['cart'][product_id_str] = quantity
     
     session.modified = True
     flash(f'{product["name"]} به سبد خرید اضافه شد.', 'success')
@@ -91,9 +94,10 @@ def cart():
     
     if 'cart' in session:
         for product_id, quantity in session['cart'].items():
-            product = dm.get_product(product_id)
+            product = db_service.get_product(int(product_id))
             if product:
-                item_total = product['price'] * quantity
+                final_price = product.get('final_price', product['price'])
+                item_total = final_price * quantity
                 cart_items.append({
                     'product': product,
                     'quantity': quantity,
@@ -137,9 +141,10 @@ def checkout():
     
     if 'cart' in session:
         for product_id, quantity in session['cart'].items():
-            product = dm.get_product(product_id)
+            product = db_service.get_product(int(product_id))
             if product:
-                item_total = product['price'] * quantity
+                final_price = product.get('final_price', product['price'])
+                item_total = final_price * quantity
                 cart_items.append({
                     'product': product,
                     'quantity': quantity,
@@ -162,48 +167,44 @@ def place_order():
         return redirect(url_for('cart'))
     
     # Get form data
-    shipping_address = request.form.get('shipping_address')
-    phone = request.form.get('phone')
-    payment_method = request.form.get('payment_method')
-    
-    # Calculate order total
-    total_price = 0
-    order_items = []
-    
-    for product_id, quantity in session['cart'].items():
-        product = dm.get_product(product_id)
-        if product:
-            item_total = product['price'] * quantity
-            order_items.append({
-                'product_id': product_id,
-                'product_name': product['name'],
-                'quantity': quantity,
-                'price': product['price'],
-                'total': item_total
-            })
-            total_price += item_total
-    
-    # Create order
-    order = {
-        'id': str(uuid.uuid4()),
-        'user_id': session['user_id'],
-        'items': order_items,
-        'total_price': total_price,
-        'shipping_address': shipping_address,
-        'phone': phone,
-        'payment_method': payment_method,
-        'status': 'pending',
-        'created_at': datetime.now().isoformat()
+    shipping_info = {
+        'shipping_name': request.form.get('shipping_name', session.get('user_name', '')),
+        'shipping_phone': request.form.get('shipping_phone'),
+        'shipping_address': request.form.get('shipping_address'),
+        'shipping_city': request.form.get('shipping_city'),
+        'shipping_postal_code': request.form.get('shipping_postal_code'),
+        'notes': request.form.get('notes', '')
     }
+    payment_method = request.form.get('payment_method', 'cash_on_delivery')
     
-    dm.add_order(order)
+    # Prepare cart items for order creation
+    cart_items = []
+    for product_id, quantity in session['cart'].items():
+        cart_items.append({
+            'product_id': int(product_id),
+            'quantity': quantity
+        })
     
-    # Clear cart
-    session.pop('cart', None)
-    session.modified = True
-    
-    flash('سفارش شما با موفقیت ثبت شد. شماره سفارش: ' + order['id'][:8], 'success')
-    return redirect(url_for('account'))
+    try:
+        # Create order using database service
+        order = db_service.create_order(
+            user_id=int(session['user_id']),
+            cart_items=cart_items,
+            shipping_info=shipping_info,
+            payment_method=payment_method
+        )
+        
+        # Clear cart
+        session.pop('cart', None)
+        session.modified = True
+        
+        flash(f'سفارش شما با موفقیت ثبت شد. شماره سفارش: {order["order_number"]}', 'success')
+        return redirect(url_for('account'))
+        
+    except Exception as e:
+        logging.error(f"Error placing order: {e}")
+        flash('خطا در ثبت سفارش. لطفا دوباره تلاش کنید.', 'error')
+        return redirect(url_for('checkout'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -212,11 +213,11 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        user = dm.get_user_by_email(email)
-        if user and check_password_hash(user['password_hash'], password):
+        user = db_service.verify_user_password(email, password)
+        if user:
             session['user_id'] = user['id']
             session['user_email'] = user['email']
-            session['user_name'] = user['name']
+            session['user_name'] = user['full_name']
             session['is_admin'] = user.get('is_admin', False)
             
             flash('با موفقیت وارد شدید.', 'success')
@@ -230,34 +231,36 @@ def login():
 def register():
     """صفحه ثبت نام"""
     if request.method == 'POST':
-        name = request.form.get('name')
+        full_name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        phone = request.form.get('phone', '')
         
         # Validation
         if password != confirm_password:
             flash('رمز عبور و تکرار آن مطابقت ندارند.', 'error')
             return render_template('register.html')
         
-        if dm.get_user_by_email(email):
+        if db_service.get_user_by_email(email):
             flash('این ایمیل قبلاً ثبت شده است.', 'error')
             return render_template('register.html')
         
-        # Create user
-        user = {
-            'id': str(uuid.uuid4()),
-            'name': name,
-            'email': email,
-            'password_hash': generate_password_hash(password),
-            'is_admin': False,
-            'created_at': datetime.now().isoformat()
-        }
-        
-        dm.add_user(user)
-        
-        flash('ثبت نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.', 'success')
-        return redirect(url_for('login'))
+        try:
+            # Create user using database service
+            user = db_service.create_user(
+                email=email,
+                password=password,
+                full_name=full_name,
+                phone=phone
+            )
+            
+            flash('ثبت نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.', 'success')
+            return redirect(url_for('login'))
+            
+        except Exception as e:
+            logging.error(f"Error creating user: {e}")
+            flash('خطا در ثبت نام. لطفا دوباره تلاش کنید.', 'error')
     
     return render_template('register.html')
 
@@ -272,31 +275,25 @@ def logout():
 @login_required
 def account():
     """صفحه حساب کاربری"""
-    user_orders = dm.get_user_orders(session['user_id'])
+    user_orders = db_service.get_orders(user_id=int(session['user_id']))
     return render_template('account.html', orders=user_orders)
 
 @app.route('/admin')
 @admin_required
 def admin():
     """پنل مدیریت"""
-    stats = {
-        'total_products': len(dm.get_products()),
-        'total_orders': len(dm.get_orders()),
-        'total_users': len(dm.get_users()),
-        'pending_orders': len([o for o in dm.get_orders() if o['status'] == 'pending'])
-    }
-    
-    recent_orders = dm.get_orders()[-10:]  # Last 10 orders
+    stats = db_service.get_dashboard_stats()
+    recent_orders = db_service.get_orders()[:10]  # First 10 orders (most recent due to ORDER BY)
     return render_template('admin.html', stats=stats, recent_orders=recent_orders)
 
 @app.route('/admin/update_order_status', methods=['POST'])
 @admin_required
 def update_order_status():
     """بروزرسانی وضعیت سفارش"""
-    order_id = request.form.get('order_id')
+    order_id = int(request.form.get('order_id'))
     new_status = request.form.get('status')
     
-    if dm.update_order_status(order_id, new_status):
+    if db_service.update_order_status(order_id, new_status):
         flash('وضعیت سفارش بروزرسانی شد.', 'success')
     else:
         flash('خطا در بروزرسانی وضعیت سفارش.', 'error')
