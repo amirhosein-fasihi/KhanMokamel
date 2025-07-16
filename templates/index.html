@@ -3,51 +3,65 @@
 {% block title %}فروشگاه مکمل‌های بدنسازی ایران - خانه{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section bg-primary text-white py-5">
+<!-- Modern Hero Section -->
+<section class="hero-section text-white">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-3">
-                    مکمل‌های اصل بدنسازی
-                </h1>
-                <p class="lead mb-4">
-                    بهترین مکمل‌های بدنسازی با کیفیت جهانی برای دستیابی به اهداف ورزشی شما.
-                    محصولات اصل، تضمینی و با بهترین قیمت.
-                </p>
-                <a href="{{ url_for('products') }}" class="btn btn-light btn-lg">
-                    <i class="fas fa-shopping-bag me-2"></i>
-                    مشاهده محصولات
-                </a>
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-7">
+                <div class="hero-content animate-fade-in">
+                    <h1 class="hero-title mb-4">
+                        مکمل‌های 
+                        <span class="text-gradient">ایرانی</span>
+                        بدنسازی
+                    </h1>
+                    <p class="hero-subtitle">
+                        بهترین مکمل‌های بدنسازی با کیفیت جهانی برای دستیابی به اهداف ورزشی شما.
+                        محصولات اصل، تضمینی و با بهترین قیمت در ایران.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{{ url_for('products') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>
+                            مشاهده محصولات
+                        </a>
+                        <a href="#categories" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-arrow-down me-2"></i>
+                            دسته‌بندی‌ها
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="https://pixabay.com/get/g47ccf4ed9817b0dde41d5e19f24b8750aa0c4bae1a7b5acdbbd664d8509a76b536fe82af2abbb4a1211afbef3dcefca36b3e106fa170f7b99802174723002c2f_1280.jpg" 
-                     alt="ورزشکار ایرانی" class="img-fluid rounded shadow">
+            <div class="col-lg-5 text-center animate-slide-up">
+                <div class="position-relative">
+                    <img src="https://pixabay.com/get/g47ccf4ed9817b0dde41d5e19f24b8750aa0c4bae1a7b5acdbbd664d8509a76b536fe82af2abbb4a1211afbef3dcefca36b3e106fa170f7b99802174723002c2f_1280.jpg" 
+                         alt="ورزشکار ایرانی" class="img-fluid rounded-4 shadow-lg">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient rounded-4" style="background: linear-gradient(45deg, rgba(30, 64, 175, 0.3), transparent);"></div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Categories Section -->
-<section class="py-5">
+<!-- Modern Categories Section -->
+<section id="categories" class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">دسته‌بندی محصولات</h2>
-            <p class="text-muted">انواع مکمل‌های بدنسازی برای نیازهای مختلف</p>
+        <div class="section-header">
+            <h2 class="gradient-text">دسته‌بندی محصولات</h2>
+            <p>انواع مکمل‌های بدنسازی برای نیازهای مختلف ورزشکاران</p>
         </div>
         
         {% if categories %}
         <div class="row g-4">
             {% for category in categories %}
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 hover-lift animate-fade-in" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
                     <div class="card-body text-center p-4">
-                        <div class="category-icon mb-3">
-                            <i class="{{ category.icon }} text-primary" style="font-size: 3rem;"></i>
+                        <div class="category-icon">
+                            <i class="{{ category.icon }}"></i>
                         </div>
-                        <h5 class="card-title fw-bold">{{ category.name }}</h5>
-                        <p class="card-text text-muted">{{ category.description }}</p>
-                        <a href="{{ url_for('products', category=category.id) }}" class="btn btn-outline-primary">
+                        <h5 class="card-title fw-bold mb-3">{{ category.name }}</h5>
+                        <p class="card-text text-muted mb-4">{{ category.description }}</p>
+                        <a href="{{ url_for('products', category=category.id) }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>
                             مشاهده محصولات
                         </a>
                     </div>
@@ -57,41 +71,71 @@
         </div>
         {% else %}
         <div class="text-center py-5">
-            <i class="fas fa-box-open text-muted" style="font-size: 4rem;"></i>
-            <h4 class="text-muted mt-3">هنوز دسته‌بندی‌ای تعریف نشده است</h4>
-            <p class="text-muted">به زودی دسته‌بندی‌های مختلف مکمل‌ها اضافه خواهد شد.</p>
+            <div class="glass-effect p-5 rounded-4 d-inline-block">
+                <i class="fas fa-box-open text-primary" style="font-size: 4rem;"></i>
+                <h4 class="text-primary mt-3">به زودی دسته‌بندی‌ها اضافه می‌شوند</h4>
+                <p class="text-muted">مجموعه کاملی از مکمل‌های بدنسازی در حال آماده‌سازی است.</p>
+            </div>
         </div>
         {% endif %}
     </div>
 </section>
 
-<!-- Featured Products Section -->
+<!-- Modern Featured Products Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">محصولات ویژه</h2>
-            <p class="text-muted">پرفروش‌ترین مکمل‌های بدنسازی</p>
+        <div class="section-header">
+            <h2 class="gradient-text">محصولات ویژه</h2>
+            <p>پرفروش‌ترین و محبوب‌ترین مکمل‌های بدنسازی</p>
         </div>
         
         {% if products %}
         <div class="row g-4">
             {% for product in products %}
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
-                    <img src="{{ product.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
-                         class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card product-card h-100 hover-lift animate-fade-in" style="animation-delay: {{ loop.index0 * 0.15 }}s;">
+                    {% if product.get('discount') %}
+                    <div class="discount-badge">
+                        {{ product.discount }}% تخفیف
+                    </div>
+                    {% endif %}
+                    
+                    <div class="position-relative overflow-hidden">
+                        <img src="{{ product.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
+                             class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                    </div>
                     
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text text-muted flex-grow-1">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-auto">
-                            <div class="price">
-                                <span class="fw-bold text-primary fs-5">{{ "{:,}".format(product.price) }} تومان</span>
+                        {% if product.get('rating') %}
+                        <div class="rating mb-2">
+                            <div class="stars">
+                                {% for i in range(5) %}
+                                    <i class="fas fa-star{% if i >= product.rating|int %} text-muted{% endif %}"></i>
+                                {% endfor %}
                             </div>
-                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary btn-sm">
-                                مشاهده
-                            </a>
+                            <span class="count">({{ product.get('reviews_count', 0) }})</span>
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="card-title fw-bold mb-3">{{ product.name }}</h5>
+                        <p class="card-text text-muted flex-grow-1 mb-4">{{ product.description[:120] }}{% if product.description|length > 120 %}...{% endif %}</p>
+                        
+                        <div class="mt-auto">
+                            <div class="price mb-3">
+                                {% if product.get('original_price') and product.original_price > product.price %}
+                                <div class="original-price mb-1">{{ "{:,}".format(product.original_price) }} تومان</div>
+                                {% endif %}
+                                <div class="current-price fw-bold text-success fs-5">
+                                    {{ "{:,}".format(product.price) }} تومان
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-eye me-2"></i>
+                                    مشاهده جزئیات
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,51 +144,90 @@
         </div>
         
         <div class="text-center mt-5">
-            <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
+            <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg px-5">
                 مشاهده همه محصولات
                 <i class="fas fa-arrow-left ms-2"></i>
             </a>
         </div>
         {% else %}
         <div class="text-center py-5">
-            <i class="fas fa-box-open text-muted" style="font-size: 4rem;"></i>
-            <h4 class="text-muted mt-3">هنوز محصولی اضافه نشده است</h4>
-            <p class="text-muted">به زودی محصولات مختلف مکمل‌های بدنسازی اضافه خواهد شد.</p>
+            <div class="glass-effect p-5 rounded-4 d-inline-block">
+                <i class="fas fa-box-open text-primary" style="font-size: 4rem;"></i>
+                <h4 class="text-primary mt-3">محصولات در حال بارگذاری</h4>
+                <p class="text-muted">مجموعه کاملی از بهترین مکمل‌های بدنسازی به زودی اضافه می‌شود.</p>
+            </div>
         </div>
         {% endif %}
     </div>
 </section>
 
-<!-- Features Section -->
+<!-- Modern Features Section -->
 <section class="py-5">
     <div class="container">
+        <div class="section-header">
+            <h2 class="gradient-text">مزایای خرید از ما</h2>
+            <p>چرا مکمل‌های خود را از فروشگاه ما تهیه کنید؟</p>
+        </div>
+        
         <div class="row g-4">
-            <div class="col-md-3 text-center">
-                <div class="feature-box p-4">
-                    <i class="fas fa-shipping-fast text-primary mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="fw-bold">ارسال سریع</h5>
-                    <p class="text-muted">ارسال در کمترین زمان ممکن به سراسر ایران</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box animate-fade-in" style="animation-delay: 0.1s;">
+                    <i class="fas fa-shipping-fast" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mt-3">ارسال سریع</h5>
+                    <p class="text-muted">ارسال رایگان برای خریدهای بالای ۵۰۰ هزار تومان</p>
                 </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="feature-box p-4">
-                    <i class="fas fa-certificate text-primary mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="fw-bold">کیفیت تضمینی</h5>
-                    <p class="text-muted">تمامی محصولات اصل و دارای مجوزهای لازم</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box animate-fade-in" style="animation-delay: 0.2s;">
+                    <i class="fas fa-medal" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mt-3">کیفیت تضمینی</h5>
+                    <p class="text-muted">تمام محصولات اصل و دارای مجوزهای لازم</p>
                 </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="feature-box p-4">
-                    <i class="fas fa-headset text-primary mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="fw-bold">پشتیبانی ۲۴/۷</h5>
-                    <p class="text-muted">پشتیبانی همه‌روزه برای پاسخ به سوالات شما</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box animate-fade-in" style="animation-delay: 0.3s;">
+                    <i class="fas fa-headset" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mt-3">پشتیبانی ۲۴/۷</h5>
+                    <p class="text-muted">مشاوره رایگان با کارشناسان ورزشی</p>
                 </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="feature-box p-4">
-                    <i class="fas fa-money-bill-wave text-primary mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="fw-bold">قیمت مناسب</h5>
-                    <p class="text-muted">بهترین قیمت‌ها با کیفیت بالا</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-box animate-fade-in" style="animation-delay: 0.4s;">
+                    <i class="fas fa-undo" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mt-3">ضمانت بازگشت</h5>
+                    <p class="text-muted">امکان بازگشت کالا تا ۷ روز پس از خرید</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-black mb-2">۱۰۰+</h3>
+                    <p class="fs-5">محصول متنوع</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-black mb-2">۵۰۰۰+</h3>
+                    <p class="fs-5">مشتری راضی</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-black mb-2">۲۴/۷</h3>
+                    <p class="fs-5">پشتیبانی آنلاین</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-black mb-2">۹۸%</h3>
+                    <p class="fs-5">رضایت مشتریان</p>
                 </div>
             </div>
         </div>

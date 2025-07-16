@@ -8,6 +8,20 @@ This is a Persian/Farsi e-commerce web application for bodybuilding supplements 
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (July 16, 2025)
+
+### Major UI/UX Redesign
+- ✓ Implemented modern design system with enhanced color palette and typography
+- ✓ Added glassmorphism effects and advanced shadows for depth
+- ✓ Created animated hero section with floating effects and gradient overlays  
+- ✓ Enhanced product cards with hover animations and discount badges
+- ✓ Added rating display system with star ratings
+- ✓ Improved category cards with animated icons and gradient backgrounds
+- ✓ Created modern statistics section showcasing store achievements
+- ✓ Enhanced navigation with hover effects and backdrop blur
+- ✓ Added responsive design improvements for mobile devices
+- ✓ Implemented fade-in animations with staggered delays for better UX
+
 ## System Architecture
 
 ### Frontend Architecture
