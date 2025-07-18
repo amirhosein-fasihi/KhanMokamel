@@ -1,4 +1,4 @@
-# Persian Bodybuilding Supplements Store
+# Khan sup - Persian Bodybuilding Supplements Store
 
 ## Overview
 A Flask-based e-commerce application for selling bodybuilding supplements with Persian language support. The project includes user authentication, product catalog, shopping cart, and order management functionality.
