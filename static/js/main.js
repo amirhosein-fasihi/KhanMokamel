@@ -473,37 +473,15 @@ function initializeProductGridToggle() {
     }
 }
 
-// Mobile-specific optimizations
+// Mobile-specific optimizations (navbar toggle disabled)
 document.addEventListener('DOMContentLoaded', function() {
-    // Improve mobile navigation
-    const navbarToggler = document.querySelector('.navbar-toggler');
+    // Remove any existing navbar toggle functionality since it's disabled
     const navbarCollapse = document.querySelector('.navbar-collapse');
-    
-    if (navbarToggler && navbarCollapse) {
-        navbarToggler.addEventListener('click', function() {
-            // Add smooth animation for mobile menu
-            setTimeout(() => {
-                if (navbarCollapse.classList.contains('show')) {
-                    navbarCollapse.style.animation = 'slideDown 0.3s ease-out';
-                } else {
-                    navbarCollapse.style.animation = 'slideUp 0.3s ease-out';
-                }
-            }, 50);
-        });
+    if (navbarCollapse) {
+        // Ensure navbar is always visible
+        navbarCollapse.classList.add('show');
+        navbarCollapse.style.display = 'flex';
     }
-    
-    // Close mobile menu when clicking nav links
-    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth < 992) { // Bootstrap lg breakpoint
-                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
-                    toggle: false
-                });
-                bsCollapse.hide();
-            }
-        });
-    });
     
     // Optimize scroll performance on mobile
     let ticking = false;
