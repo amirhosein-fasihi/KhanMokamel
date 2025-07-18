@@ -674,11 +674,11 @@ a:hover {
     font-weight: 500;
 }
 
-/* Footer Enhancement */
+/* Modern SEO-Optimized Footer */
 .footer {
     background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
     color: var(--gray-300);
-    padding: 3rem 0 1rem;
+    padding: 4rem 0 0;
     margin-top: auto;
     position: relative;
     overflow: hidden;
@@ -690,24 +690,303 @@ a:hover {
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
 }
 
-.footer h5 {
+.footer-brand {
+    margin-bottom: 2rem;
+}
+
+.brand-title {
+    font-size: 1.75rem;
+    font-weight: 900;
     color: white;
-    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.brand-subtitle {
+    color: var(--primary-light);
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.footer-description {
+    color: var(--gray-400);
+    line-height: 1.6;
     margin-bottom: 1.5rem;
 }
 
-.footer a {
+.footer-badges .badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+}
+
+.footer-title {
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: var(--primary-color);
+    border-radius: 1px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
     color: var(--gray-400);
+    text-decoration: none;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    color: var(--primary-light);
+    transform: translateX(-3px);
+}
+
+.footer-links a::before {
+    content: '▶';
+    margin-left: 0.5rem;
+    font-size: 0.6rem;
+    color: var(--primary-color);
     transition: var(--transition);
 }
 
-.footer a:hover {
-    color: var(--primary-light);
+.footer-links a:hover::before {
+    transform: translateX(2px);
+}
+
+.contact-info {
+    margin-bottom: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.05);
     transform: translateX(-2px);
+}
+
+.contact-item i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+    min-width: 20px;
+}
+
+.contact-item div {
+    flex: 1;
+}
+
+.contact-item strong {
+    color: white;
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.contact-item span,
+.contact-item a {
+    color: var(--gray-400);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.contact-item a:hover {
+    color: var(--primary-light);
+}
+
+.newsletter {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.newsletter h6 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.newsletter .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.newsletter .form-control::placeholder {
+    color: var(--gray-400);
+}
+
+.newsletter .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+}
+
+.newsletter .btn {
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.75rem 1.5rem;
+}
+
+.footer-middle {
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 2rem 0 1rem;
+}
+
+.trust-badges h6,
+.social-section h6 {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.trust-badge {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    color: var(--gray-300);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trust-badge i {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 50%;
+    color: var(--gray-300);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 1.2rem;
+}
+
+.social-link:hover {
+    transform: translateY(-3px);
+    color: white;
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+.social-link.instagram:hover { background: #E4405F; border-color: #E4405F; }
+.social-link.telegram:hover { background: #0088cc; border-color: #0088cc; }
+.social-link.whatsapp:hover { background: #25D366; border-color: #25D366; }
+.social-link.youtube:hover { background: #FF0000; border-color: #FF0000; }
+.social-link.aparat:hover { background: #FF6B35; border-color: #FF6B35; }
+
+.footer-bottom {
+    padding: 1.5rem 0;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+}
+
+.footer-legal {
+    margin-bottom: 1rem;
+}
+
+.footer-links-bottom {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.footer-links-bottom a {
+    color: var(--gray-500);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 0.85rem;
+}
+
+.footer-links-bottom a:hover {
+    color: var(--primary-light);
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: var(--primary-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 /* Mobile Optimizations */
@@ -823,16 +1102,69 @@ a:hover {
     
     /* Footer Mobile */
     .footer {
-        padding: 2rem 0 1rem;
-        text-align: center;
+        padding: 3rem 0 1rem;
     }
     
     .footer .row > div {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
     }
     
-    .footer h5, .footer h6 {
+    .footer-title {
+        font-size: 1rem;
         margin-bottom: 1rem;
+    }
+    
+    .footer-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .footer-links a {
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+    
+    .contact-item {
+        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .contact-item i {
+        margin-left: 0.75rem;
+    }
+    
+    .social-links {
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .social-link {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .trust-badges .d-flex {
+        justify-content: center;
+    }
+    
+    .trust-badge {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .footer-links-bottom {
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .back-to-top {
+        bottom: 1rem;
+        left: 1rem;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
     }
     
     /* Form Mobile */
