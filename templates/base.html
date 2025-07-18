@@ -51,9 +51,9 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <a class="navbar-brand fw-bold" href="{{ url_foor('(ddx') }}">
                 <i class="fas fa-dumbbell me-2"></i>
-                مکمل‌های ایران
+                 ایر                "                
             </a>
             
             <!-- Navbar toggler disabled for always-visible menu -->
@@ -62,24 +62,23 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('index') }}">
-                            <i class="fas fa-home me-1"></i>خانه
+                            <i class="fas fa-home me-1"></i>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('products') }}">
-                            <i class="fas fa-box me-1"></i>محصولات
                         </a>
                     </li>
                     {% if session.user_id %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('account') }}">
-                                <i class="fas fa-user me-1"></i>حساب کاربری
+                                <i class="fas fa-user me-1"></i
                             </a>
                         </li>
                         {% if session.is_admin %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('admin') }}">
-                                    <i class="fas fa-cogs me-1"></i>مدیریت
+                                    <i class="fas fa-cogs me-1"></i>
                                 </a>
                             </li>
                         {% endif %}
