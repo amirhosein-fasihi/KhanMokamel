@@ -11,6 +11,10 @@ A Flask-based e-commerce application for selling bodybuilding supplements with P
 
 ## Recent Changes
 - July 18, 2025: Migrated from Replit Agent to Replit environment
+- Enhanced color palette with vibrant purple and orange accents for better visual appeal
+- Updated primary colors to deeper purple (#7c3aed) with warm orange accents (#f97316)
+- Improved button gradients and hero section backgrounds with new accent colors
+- Added site name "Khan sup" below logo in navigation header
 - Added PostgreSQL database configuration
 - Set up proper environment variables for database connection
 - Added site name "Khan sup" below the logo in navigation
