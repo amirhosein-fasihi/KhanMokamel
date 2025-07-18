@@ -25,7 +25,7 @@
     /* Dark Mode Text Colors */
     --text-primary: #ffffff;
     --text-secondary: #e5e7eb;
-    --text-muted: #9ca3af;
+    --text-muted: #d1d5db;
     --text-accent: var(--primary-light);
     
     /* Dark Mode Borders */
@@ -106,6 +106,24 @@ h6 { font-size: clamp(1rem, 2vw, 1.125rem); font-weight: 500; }
 
 .text-primary {
     color: var(--primary-color) !important;
+}
+
+/* Enhanced Text Styles for Dark Mode */
+.card-text {
+    color: var(--text-secondary) !important;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+    opacity: 0.9;
+}
+
+.small.text-muted {
+    color: var(--text-muted) !important;
+    opacity: 0.85;
+    font-weight: 400;
 }
 
 .text-gradient {
