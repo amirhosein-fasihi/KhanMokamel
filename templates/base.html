@@ -51,82 +51,58 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
+            <!-- Logo -->
             <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
                 <i class="fas fa-dumbbell me-2"></i>
                 فروشگاه مکمل‌های بدنسازی ایران
             </a>
             
-            <!-- Navbar toggler disabled for always-visible menu -->
+            <!-- Search Bar -->
+            <div class="mx-auto" style="max-width: 500px; width: 100%;">
+                <form class="d-flex" method="GET" action="{{ url_for('products') }}">
+                    <div class="input-group">
+                        <input class="form-control" type="search" name="search" placeholder="جستجو در محصولات..." aria-label="Search">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
-                            <i class="fas fa-home me-1"></i>
-                            صفحه اصلی
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('products') }}">
-                            <i class="fas fa-box me-1"></i>
-                            محصولات
-                        </a>
-                    </li>
-                    {% if session.user_id %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('account') }}">
-                                <i class="fas fa-user me-1"></i>
-                                حساب کاربری
-                            </a>
-                        </li>
-                        {% if session.is_admin %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('admin') }}">
-                                    <i class="fas fa-cogs me-1"></i>
-                                    مدیریت
-                                </a>
-                            </li>
+            <!-- User Actions -->
+            <div class="navbar-nav ms-auto">
+                <!-- Cart -->
+                <a class="nav-link position-relative cart-link" href="{{ url_for('cart') }}">
+                    <i class="fas fa-shopping-cart me-1"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
+                        {% if session.cart %}
+                            {{ session.cart.values() | sum }}
+                        {% else %}
+                            0
                         {% endif %}
-                    {% endif %}
-                </ul>
+                    </span>
+                </a>
                 
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link position-relative cart-link" href="{{ url_for('cart') }}">
-                            <i class="fas fa-shopping-cart me-1"></i>سبد خرید
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
-                                {% if session.cart %}
-                                    {{ session.cart.values() | sum }}
-                                {% else %}
-                                    0
-                                {% endif %}
-                            </span>
+                <!-- User Menu -->
+                {% if session.user_id %}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ session.user_name }}
                         </a>
-                    </li>
-                    {% if session.user_id %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ session.user_name }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ url_for('account') }}">حساب کاربری</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">خروج</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>ورود
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">
-                                <i class="fas fa-user-plus me-1"></i>ثبت نام
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('account') }}">حساب کاربری</a></li>
+                            {% if session.is_admin %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin') }}">مدیریت</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">خروج</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('login') }}">
+                        <i class="fas fa-sign-in-alt me-1"></i>ورود
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
