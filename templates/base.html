@@ -21,14 +21,14 @@
     <meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url }}">
-    <meta property="og:image" content="{{ url_for('static', filename='images/hero-bg.png', _external=True) }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
     <meta property="og:locale" content="fa_IR">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}{{ self.title() }}{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}{{ self.description() }}{% endblock %}">
-    <meta name="twitter:image" content="{{ url_for('static', filename='images/hero-bg.png', _external=True) }}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ request.url }}">

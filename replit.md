@@ -27,6 +27,10 @@ A Flask-based e-commerce application for selling bodybuilding supplements with P
 - Added structured contact information and trust badges
 - Integrated newsletter signup and social media links
 - Added back-to-top functionality and enhanced user experience
+- Converted entire website to dark mode theme
+- Removed hero background image and implemented gradient dark backgrounds
+- Updated all color variables and component styling for dark mode
+- Enhanced contrast and readability with proper dark mode color palette
 
 ## User Preferences
 - Language: Persian (Farsi) with RTL support
@@ -40,6 +44,9 @@ A Flask-based e-commerce application for selling bodybuilding supplements with P
 - SEO-friendly footer with structured data and trust signals
 - Comprehensive meta tags for search engine optimization
 - Professional contact information and business credibility indicators
+- Dark mode design for modern aesthetic and improved user experience
+- Gradient backgrounds and glass morphism effects optimized for dark theme
+- Enhanced visibility and contrast for better accessibility
 
 ## Current Features
 - User registration and authentication
