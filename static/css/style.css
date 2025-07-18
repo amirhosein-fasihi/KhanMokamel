@@ -1,5 +1,4 @@
-/* Persian Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+/* System Fonts Only - No External Font Loading */
 
 /* Dark Mode Color Palette & Variables */
 :root {
@@ -67,7 +66,7 @@
 
 /* Base Styles */
 * {
-    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     box-sizing: border-box;
 }
 

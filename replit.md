@@ -31,6 +31,8 @@ A Flask-based e-commerce application for selling bodybuilding supplements with P
 - Removed hero background image and implemented gradient dark backgrounds
 - Updated all color variables and component styling for dark mode
 - Enhanced contrast and readability with proper dark mode color palette
+- Removed external font loading for better performance
+- Switched to system fonts for cleaner and faster loading
 
 ## User Preferences
 - Language: Persian (Farsi) with RTL support
