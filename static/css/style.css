@@ -2553,6 +2553,9 @@ footer a:hover {
     scrollbar-color: var(--primary-color) var(--bg-secondary);
     -webkit-overflow-scrolling: touch;
     padding-bottom: 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
 }
 
 .products-horizontal::-webkit-scrollbar {
@@ -2627,6 +2630,9 @@ footer a:hover {
     scrollbar-color: var(--primary-color) var(--bg-secondary);
     -webkit-overflow-scrolling: touch;
     padding-bottom: 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
 }
 
 .categories-horizontal::-webkit-scrollbar {
