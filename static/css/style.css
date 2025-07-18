@@ -95,6 +95,20 @@ h6 { font-size: 1.125rem; font-weight: 500; }
     background-clip: text;
 }
 
+.text-gradient-light {
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-color) 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease-in-out infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
 /* Enhanced Links */
 a {
     text-decoration: none;
@@ -171,28 +185,48 @@ a:hover {
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
-/* Modern Hero Section */
+/* Modern Hero Section with Professional Background */
 .hero-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    min-height: 80vh;
+    min-height: 85vh;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
 }
 
-.hero-section::before {
-    content: '';
+.hero-background {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
-    animation: float 20s ease-in-out infinite;
+    background-image: url('/static/images/hero-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.4) contrast(1.1);
+    transform: scale(1.05);
+    transition: transform 20s ease-in-out;
+}
+
+.hero-background:hover {
+    transform: scale(1.1);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg, 
+        rgba(99, 102, 241, 0.8) 0%, 
+        rgba(79, 70, 229, 0.6) 25%,
+        rgba(139, 92, 246, 0.7) 50%,
+        rgba(99, 102, 241, 0.8) 100%
+    );
+    backdrop-filter: blur(1px);
 }
 
 @keyframes float {
@@ -203,16 +237,40 @@ a:hover {
 
 .hero-section .container {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .hero-content {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-xl);
-    padding: 3rem;
-    box-shadow: var(--shadow-xl);
+    padding: 3rem 2.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-color), transparent, var(--accent-secondary));
+}
+
+.hero-features {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-features span {
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
 .hero-title {

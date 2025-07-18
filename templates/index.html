@@ -3,38 +3,47 @@
 {% block title %}فروشگاه مکمل‌های بدنسازی ایران - خانه{% endblock %}
 
 {% block content %}
-<!-- Modern Hero Section -->
-<section class="hero-section text-white">
-    <div class="container">
+<!-- Modern Hero Section with Professional Background -->
+<section class="hero-section text-white position-relative">
+    <div class="hero-background"></div>
+    <div class="hero-overlay"></div>
+    <div class="container position-relative">
         <div class="row align-items-center min-vh-75">
-            <div class="col-lg-7">
+            <div class="col-lg-8 col-xl-6">
                 <div class="hero-content animate-fade-in">
                     <h1 class="hero-title mb-4">
                         مکمل‌های 
-                        <span class="text-gradient">ایرانی</span>
+                        <span class="text-gradient-light">حرفه‌ای</span>
                         بدنسازی
                     </h1>
-                    <p class="hero-subtitle">
+                    <p class="hero-subtitle mb-4">
                         بهترین مکمل‌های بدنسازی با کیفیت جهانی برای دستیابی به اهداف ورزشی شما.
                         محصولات اصل، تضمینی و با بهترین قیمت در ایران.
                     </p>
+                    <div class="hero-features mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>محصولات اصل و تضمینی</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-shipping-fast text-info me-3"></i>
+                            <span>ارسال سریع به سراسر کشور</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-medal text-warning me-3"></i>
+                            <span>کیفیت برتر و قیمت مناسب</span>
+                        </div>
+                    </div>
                     <div class="d-flex gap-3 flex-wrap">
-                        <a href="{{ url_for('products') }}" class="btn btn-light btn-lg">
+                        <a href="{{ url_for('products') }}" class="btn btn-light btn-lg px-4">
                             <i class="fas fa-shopping-bag me-2"></i>
                             مشاهده محصولات
                         </a>
-                        <a href="#categories" class="btn btn-outline-light btn-lg">
+                        <a href="#categories" class="btn btn-outline-light btn-lg px-4">
                             <i class="fas fa-arrow-down me-2"></i>
                             دسته‌بندی‌ها
                         </a>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-5 text-center animate-slide-up">
-                <div class="position-relative">
-                    <img src="https://pixabay.com/get/g47ccf4ed9817b0dde41d5e19f24b8750aa0c4bae1a7b5acdbbd664d8509a76b536fe82af2abbb4a1211afbef3dcefca36b3e106fa170f7b99802174723002c2f_1280.jpg" 
-                         alt="ورزشکار ایرانی" class="img-fluid rounded-4 shadow-lg">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient rounded-4" style="background: linear-gradient(45deg, rgba(30, 64, 175, 0.3), transparent);"></div>
                 </div>
             </div>
         </div>
