@@ -2278,11 +2278,16 @@ footer a:hover {
     align-items: center;
     transition: var(--transition);
     text-decoration: none;
+    padding: 5px;
 }
 
 .brand-logo:hover {
     text-decoration: none;
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+.brand-logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .logo-image {
