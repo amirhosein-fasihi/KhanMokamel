@@ -421,3 +421,90 @@ function initializeLazyLoading() {
 
 // Initialize lazy loading when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeLazyLoading);
+
+// Mobile-specific optimizations
+document.addEventListener('DOMContentLoaded', function() {
+    // Improve mobile navigation
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    if (navbarToggler && navbarCollapse) {
+        navbarToggler.addEventListener('click', function() {
+            // Add smooth animation for mobile menu
+            setTimeout(() => {
+                if (navbarCollapse.classList.contains('show')) {
+                    navbarCollapse.style.animation = 'slideDown 0.3s ease-out';
+                } else {
+                    navbarCollapse.style.animation = 'slideUp 0.3s ease-out';
+                }
+            }, 50);
+        });
+    }
+    
+    // Close mobile menu when clicking nav links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 992) { // Bootstrap lg breakpoint
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                    toggle: false
+                });
+                bsCollapse.hide();
+            }
+        });
+    });
+    
+    // Optimize scroll performance on mobile
+    let ticking = false;
+    function updateScrollPosition() {
+        // Throttle scroll events for better performance
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateScrollPosition);
+            ticking = true;
+        }
+    });
+    
+    // Touch gesture improvements
+    if ('ontouchstart' in window) {
+        // Add touch feedback for cards
+        const cards = document.querySelectorAll('.card, .btn');
+        cards.forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    }
+    
+    // Optimize images for mobile
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        img.addEventListener('load', function() {
+            this.style.opacity = '1';
+        });
+        
+        // Add loading placeholder
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.3s ease';
+    });
+    
+    // Mobile-specific search enhancements
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput && window.innerWidth < 768) {
+        searchInput.addEventListener('focus', function() {
+            // Scroll to search input on mobile
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    }
+});
