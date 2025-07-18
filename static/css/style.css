@@ -2540,3 +2540,71 @@ footer a:hover {
         min-height: calc(100vh - 70px);
     }
 }
+
+/* Horizontal Products Scroll Styles */
+.horizontal-scroll-container {
+    position: relative;
+    margin: 0 -15px;
+    padding: 0 15px;
+}
+
+.products-horizontal {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--bg-secondary);
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+}
+
+.products-horizontal::-webkit-scrollbar {
+    height: 6px;
+}
+
+.products-horizontal::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 3px;
+}
+
+.products-horizontal::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.products-horizontal::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
+
+.product-card-horizontal {
+    transition: transform 0.3s ease;
+}
+
+.product-card-horizontal:hover {
+    transform: translateY(-5px);
+}
+
+.product-card-horizontal .card {
+    border: 1px solid var(--border-glass);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+}
+
+.product-card-horizontal .card:hover {
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
+}
+
+/* Mobile optimization for horizontal scroll */
+@media (max-width: 768px) {
+    .product-card-horizontal {
+        width: 240px !important;
+    }
+    
+    .horizontal-scroll-container {
+        margin: 0 -10px;
+        padding: 0 10px;
+    }
+    
+    .products-horizontal {
+        gap: 1rem !important;
+    }
+}
