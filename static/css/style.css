@@ -2596,7 +2596,19 @@ footer a:hover {
 /* Mobile optimization for horizontal scroll */
 @media (max-width: 768px) {
     .product-card-horizontal {
-        width: 240px !important;
+        width: 220px !important;
+    }
+    
+    .product-card-horizontal .card {
+        height: 280px !important;
+    }
+    
+    .product-card-horizontal .card-img-top {
+        height: 140px !important;
+    }
+    
+    .product-card-horizontal .card-body {
+        padding: 0.75rem !important;
     }
     
     .horizontal-scroll-container {
@@ -2605,6 +2617,6 @@ footer a:hover {
     }
     
     .products-horizontal {
-        gap: 1rem !important;
+        gap: 0.75rem !important;
     }
 }
