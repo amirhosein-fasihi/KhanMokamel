@@ -1,728 +1,423 @@
-// Persian-RTL E-commerce Store JavaScript
-// Main functionality for bodybuilding supplements store
+// Modern JavaScript for Enhanced User Experience
 
 document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
+    // Initialize all interactive components
+    initializeScrollAnimations();
+    initializeProductGridToggle();
+    initializeSearchEnhancements();
+    initializeSmoothScrolling();
+    initializeTooltips();
+    initializeFormValidation();
 });
 
-function initializeApp() {
-    // Initialize all components
-    initializeNavigation();
-    initializeSearch();
-    initializeProductFilters();
-    initializeCart();
-    initializeForms();
-    initializeImageGallery();
-    initializeModals();
-    initializeTooltips();
-    initializeScrollEffects();
-    initializeLazyLoading();
-    
-    // Initialize Persian number formatting
-    formatPersianNumbers();
-    
-    // Initialize RTL-specific functionality
-    initializeRTLSupport();
+// Scroll-triggered animations
+function initializeScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.querySelectorAll('.animate-fade-in, .animate-slide-up, .animate-slide-in-right').forEach(el => {
+        observer.observe(el);
+    });
 }
 
-// Navigation functionality
-function initializeNavigation() {
-    const navToggler = document.querySelector('.navbar-toggler');
-    const navCollapse = document.querySelector('.navbar-collapse');
-    
-    if (navToggler && navCollapse) {
-        navToggler.addEventListener('click', function() {
-            navCollapse.classList.toggle('show');
+// Product grid view toggle
+function initializeProductGridToggle() {
+    const gridBtn = document.getElementById('gridView');
+    const listBtn = document.getElementById('listView');
+    const productContainer = document.querySelector('.products-grid');
+
+    if (gridBtn && listBtn && productContainer) {
+        gridBtn.addEventListener('click', () => {
+            setGridView(true);
+            gridBtn.classList.add('active');
+            listBtn.classList.remove('active');
+        });
+
+        listBtn.addEventListener('click', () => {
+            setGridView(false);
+            listBtn.classList.add('active');
+            gridBtn.classList.remove('active');
         });
     }
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.navbar') && navCollapse && navCollapse.classList.contains('show')) {
-            navCollapse.classList.remove('show');
-        }
-    });
-    
-    // Active navigation highlighting
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
+}
+
+function setGridView(isGrid) {
+    const products = document.querySelectorAll('.product-item');
+    products.forEach(product => {
+        if (isGrid) {
+            product.className = 'col-md-6 col-lg-4 product-item mb-4';
+        } else {
+            product.className = 'col-12 product-item mb-3';
+            const card = product.querySelector('.card');
+            if (card) {
+                card.classList.add('d-md-flex', 'flex-md-row');
+                const img = card.querySelector('.card-img-top');
+                const body = card.querySelector('.card-body');
+                if (img && body) {
+                    img.style.width = '200px';
+                    img.style.height = '200px';
+                    img.style.objectFit = 'cover';
+                    body.classList.add('flex-grow-1');
+                }
+            }
         }
     });
 }
 
-// Search functionality
-function initializeSearch() {
-    const searchForm = document.querySelector('form[action*="products"]');
+// Enhanced search functionality
+function initializeSearchEnhancements() {
     const searchInput = document.querySelector('input[name="search"]');
-    
-    if (searchForm && searchInput) {
-        // Add search suggestions (mock implementation)
-        const searchSuggestions = [
-            'پروتئین وی',
-            'کراتین',
-            'گینر',
-            'آمینو اسید',
-            'پری ورکات',
-            'پست ورکات',
-            'ویتامین',
-            'امگا ۳'
-        ];
+    if (searchInput) {
+        let searchTimeout;
         
-        let suggestionBox = null;
-        
+        // Add live search feedback
         searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
             const query = this.value.trim();
             
             if (query.length > 0) {
-                showSearchSuggestions(query, searchSuggestions);
+                this.classList.add('search-active');
+                
+                // Debounced search suggestions (if implemented)
+                searchTimeout = setTimeout(() => {
+                    // Could implement live search here
+                }, 300);
             } else {
-                hideSearchSuggestions();
+                this.classList.remove('search-active');
             }
         });
+
+        // Enhanced search placeholder animation
+        const placeholders = [
+            'جستجو در محصولات...',
+            'نام محصول را وارد کنید...',
+            'برند مورد نظر را بیابید...',
+            'دسته‌بندی را جستجو کنید...'
+        ];
         
-        searchInput.addEventListener('blur', function() {
-            // Delay hiding to allow clicking on suggestions
-            setTimeout(hideSearchSuggestions, 200);
-        });
-        
-        function showSearchSuggestions(query, suggestions) {
-            const filtered = suggestions.filter(item => 
-                item.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            if (filtered.length > 0) {
-                if (!suggestionBox) {
-                    suggestionBox = document.createElement('div');
-                    suggestionBox.className = 'search-suggestions position-absolute bg-white border rounded shadow-lg';
-                    suggestionBox.style.cssText = `
-                        top: 100%;
-                        left: 0;
-                        right: 0;
-                        z-index: 1000;
-                        max-height: 200px;
-                        overflow-y: auto;
-                    `;
-                    searchInput.parentNode.style.position = 'relative';
-                    searchInput.parentNode.appendChild(suggestionBox);
-                }
-                
-                suggestionBox.innerHTML = filtered.map(item => 
-                    `<div class="suggestion-item p-2 border-bottom cursor-pointer hover:bg-light">${item}</div>`
-                ).join('');
-                
-                // Add click handlers to suggestions
-                suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        searchInput.value = this.textContent;
-                        hideSearchSuggestions();
-                        searchForm.submit();
-                    });
+        let placeholderIndex = 0;
+        setInterval(() => {
+            if (document.activeElement !== searchInput) {
+                searchInput.placeholder = placeholders[placeholderIndex];
+                placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+            }
+        }, 3000);
+    }
+}
+
+// Smooth scrolling for anchor links
+function initializeSmoothScrolling() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
-            } else {
-                hideSearchSuggestions();
             }
+        });
+    });
+}
+
+// Enhanced tooltips
+function initializeTooltips() {
+    // Add tooltips for rating stars
+    document.querySelectorAll('.stars').forEach(starsEl => {
+        const rating = starsEl.dataset.rating;
+        if (rating) {
+            starsEl.title = `امتیاز: ${rating} از 5`;
         }
-        
-        function hideSearchSuggestions() {
-            if (suggestionBox) {
-                suggestionBox.remove();
-                suggestionBox = null;
-            }
+    });
+
+    // Add tooltips for action buttons
+    document.querySelectorAll('.btn').forEach(btn => {
+        if (btn.textContent.includes('سبد خرید')) {
+            btn.title = 'افزودن به سبد خرید';
+        } else if (btn.textContent.includes('مشاهده جزئیات')) {
+            btn.title = 'نمایش اطلاعات کامل محصول';
         }
-    }
-}
-
-// Product filters functionality
-function initializeProductFilters() {
-    const filterForm = document.querySelector('.product-filters');
-    const priceRange = document.querySelector('#priceRange');
-    const categoryFilters = document.querySelectorAll('input[name="category"]');
-    const sortSelect = document.querySelector('#sortBy');
-    
-    if (priceRange) {
-        priceRange.addEventListener('input', function() {
-            const priceLabel = document.querySelector('#priceLabel');
-            if (priceLabel) {
-                priceLabel.textContent = formatPrice(this.value);
-            }
-        });
-    }
-    
-    if (categoryFilters.length > 0) {
-        categoryFilters.forEach(filter => {
-            filter.addEventListener('change', function() {
-                if (filterForm) {
-                    filterForm.submit();
-                }
-            });
-        });
-    }
-    
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function() {
-            if (filterForm) {
-                filterForm.submit();
-            }
-        });
-    }
-}
-
-// Cart functionality
-function initializeCart() {
-    const cartButtons = document.querySelectorAll('.add-to-cart');
-    const cartQuantityInputs = document.querySelectorAll('.cart-quantity');
-    const removeButtons = document.querySelectorAll('.remove-from-cart');
-    
-    // Add to cart buttons
-    cartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const productId = this.getAttribute('data-product-id');
-            const quantity = this.closest('form').querySelector('input[name="quantity"]').value;
-            
-            addToCart(productId, quantity);
-        });
     });
-    
-    // Cart quantity changes
-    cartQuantityInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            updateCartQuantity(this.getAttribute('data-product-id'), this.value);
-        });
-    });
-    
-    // Remove from cart
-    removeButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('آیا مطمئن هستید که می‌خواهید این محصول را از سبد خرید حذف کنید؟')) {
-                const productId = this.getAttribute('data-product-id');
-                removeFromCart(productId);
-            }
-        });
-    });
-    
-    // Update cart badge
-    updateCartBadge();
 }
 
-function addToCart(productId, quantity) {
-    // This would typically make an AJAX request
-    // For now, we'll use the existing form submission
-    const form = document.querySelector(`form[action*="add_to_cart"]`);
-    if (form) {
-        form.querySelector('input[name="product_id"]').value = productId;
-        form.querySelector('input[name="quantity"]').value = quantity;
-        form.submit();
-    }
-}
-
-function updateCartQuantity(productId, quantity) {
-    // This would typically make an AJAX request
-    const form = document.querySelector(`form[action*="update_cart"]`);
-    if (form) {
-        form.querySelector('input[name="product_id"]').value = productId;
-        form.querySelector('input[name="quantity"]').value = quantity;
-        form.submit();
-    }
-}
-
-function removeFromCart(productId) {
-    window.location.href = `/remove_from_cart/${productId}`;
-}
-
-function updateCartBadge() {
-    const cartBadge = document.querySelector('.cart-badge');
-    if (cartBadge) {
-        // This would typically get the count from server/localStorage
-        const cartItems = JSON.parse(localStorage.getItem('cart') || '{}');
-        const totalItems = Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
-        cartBadge.textContent = totalItems;
-        cartBadge.style.display = totalItems > 0 ? 'inline' : 'none';
-    }
-}
-
-// Form validation and enhancement
-function initializeForms() {
+// Form validation enhancements
+function initializeFormValidation() {
     const forms = document.querySelectorAll('form');
-    
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            if (!validateForm(this)) {
+            let isValid = true;
+            
+            // Validate required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                    showFieldError(field, 'این فیلد الزامی است');
+                } else {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                    hideFieldError(field);
+                }
+                
+                // Email validation
+                if (field.type === 'email' && field.value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value)) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                        showFieldError(field, 'آدرس ایمیل معتبر نیست');
+                    }
+                }
+                
+                // Phone validation (Iranian format)
+                if (field.name === 'phone' && field.value) {
+                    const phoneRegex = /^(\+98|0)?9\d{9}$/;
+                    if (!phoneRegex.test(field.value.replace(/\s/g, ''))) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                        showFieldError(field, 'شماره تلفن معتبر نیست');
+                    }
+                }
+                
+                // Password confirmation
+                if (field.name === 'confirm_password') {
+                    const passwordField = form.querySelector('[name="password"]');
+                    if (passwordField && field.value !== passwordField.value) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                        showFieldError(field, 'تکرار رمز عبور مطابقت ندارد');
+                    }
+                }
+            });
+            
+            if (!isValid) {
                 e.preventDefault();
+                // Scroll to first error
+                const firstError = form.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
             }
         });
-    });
-    
-    // Password strength indicator
-    const passwordInputs = document.querySelectorAll('input[type="password"]');
-    passwordInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            showPasswordStrength(this);
-        });
-    });
-    
-    // Phone number formatting
-    const phoneInputs = document.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            formatPhoneNumber(this);
-        });
-    });
-    
-    // Postal code formatting
-    const postalInputs = document.querySelectorAll('input[name="postal_code"]');
-    postalInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            formatPostalCode(this);
+        
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    validateField(this);
+                }
+            });
         });
     });
 }
 
-function validateForm(form) {
-    const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+function validateField(field) {
     let isValid = true;
     
-    inputs.forEach(input => {
-        if (!input.value.trim()) {
-            showFieldError(input, 'این فیلد اجباری است');
+    if (field.hasAttribute('required') && !field.value.trim()) {
+        isValid = false;
+        showFieldError(field, 'این فیلد الزامی است');
+    } else if (field.type === 'email' && field.value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(field.value)) {
             isValid = false;
-        } else {
-            clearFieldError(input);
+            showFieldError(field, 'آدرس ایمیل معتبر نیست');
         }
-    });
-    
-    // Email validation
-    const emailInputs = form.querySelectorAll('input[type="email"]');
-    emailInputs.forEach(input => {
-        if (input.value && !isValidEmail(input.value)) {
-            showFieldError(input, 'فرمت ایمیل صحیح نیست');
-            isValid = false;
-        }
-    });
-    
-    // Phone validation
-    const phoneInputs = form.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
-        if (input.value && !isValidPhone(input.value)) {
-            showFieldError(input, 'شماره تلفن صحیح نیست');
-            isValid = false;
-        }
-    });
-    
-    return isValid;
-}
-
-function showFieldError(input, message) {
-    input.classList.add('is-invalid');
-    
-    let errorDiv = input.nextElementSibling;
-    if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
-        errorDiv = document.createElement('div');
-        errorDiv.className = 'invalid-feedback';
-        input.parentNode.appendChild(errorDiv);
     }
     
+    if (isValid) {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        hideFieldError(field);
+    } else {
+        field.classList.add('is-invalid');
+        field.classList.remove('is-valid');
+    }
+}
+
+function showFieldError(field, message) {
+    hideFieldError(field); // Remove existing error
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'invalid-feedback';
     errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
 }
 
-function clearFieldError(input) {
-    input.classList.remove('is-invalid');
-    
-    const errorDiv = input.nextElementSibling;
-    if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
-        errorDiv.remove();
+function hideFieldError(field) {
+    const existingError = field.parentNode.querySelector('.invalid-feedback');
+    if (existingError) {
+        existingError.remove();
     }
 }
 
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function isValidPhone(phone) {
-    const phoneRegex = /^09\d{9}$/;
-    return phoneRegex.test(phone.replace(/\D/g, ''));
-}
-
-function showPasswordStrength(input) {
-    const password = input.value;
-    const strength = calculatePasswordStrength(password);
+// Shopping cart functionality
+function addToCart(productId, quantity = 1) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('quantity', quantity);
     
-    let strengthIndicator = input.parentNode.querySelector('.password-strength');
-    if (!strengthIndicator) {
-        strengthIndicator = document.createElement('div');
-        strengthIndicator.className = 'password-strength mt-1';
-        input.parentNode.appendChild(strengthIndicator);
-    }
-    
-    const strengthClasses = ['weak', 'fair', 'good', 'strong'];
-    const strengthTexts = ['ضعیف', 'متوسط', 'خوب', 'قوی'];
-    
-    strengthIndicator.className = `password-strength mt-1 ${strengthClasses[strength]}`;
-    strengthIndicator.textContent = `قدرت رمز عبور: ${strengthTexts[strength]}`;
-}
-
-function calculatePasswordStrength(password) {
-    let strength = 0;
-    
-    if (password.length >= 8) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    
-    return Math.min(strength - 1, 3);
-}
-
-function formatPhoneNumber(input) {
-    let value = input.value.replace(/\D/g, '');
-    
-    if (value.length > 11) {
-        value = value.slice(0, 11);
-    }
-    
-    if (value.length > 3) {
-        value = value.slice(0, 3) + '-' + value.slice(3);
-    }
-    if (value.length > 7) {
-        value = value.slice(0, 7) + '-' + value.slice(7);
-    }
-    
-    input.value = value;
-}
-
-function formatPostalCode(input) {
-    let value = input.value.replace(/\D/g, '');
-    
-    if (value.length > 10) {
-        value = value.slice(0, 10);
-    }
-    
-    input.value = value;
-}
-
-// Image gallery functionality
-function initializeImageGallery() {
-    const mainImage = document.querySelector('#mainImage');
-    const thumbnails = document.querySelectorAll('.thumbnail-image');
-    
-    if (mainImage && thumbnails.length > 0) {
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                const newSrc = this.src;
-                mainImage.src = newSrc;
-                
-                // Update active thumbnail
-                thumbnails.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    }
-    
-    // Image zoom functionality
-    if (mainImage) {
-        mainImage.addEventListener('mouseover', function() {
-            this.style.cursor = 'zoom-in';
-        });
-        
-        mainImage.addEventListener('click', function() {
-            showImageModal(this.src);
-        });
-    }
-}
-
-function showImageModal(imageSrc) {
-    const modal = document.createElement('div');
-    modal.className = 'image-modal';
-    modal.innerHTML = `
-        <div class="modal-backdrop" onclick="closeImageModal()"></div>
-        <div class="modal-content">
-            <img src="${imageSrc}" alt="تصویر بزرگ" class="img-fluid">
-            <button class="btn-close" onclick="closeImageModal()">&times;</button>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImageModal() {
-    const modal = document.querySelector('.image-modal');
-    if (modal) {
-        modal.remove();
-        document.body.style.overflow = 'auto';
-    }
-}
-
-// Modal functionality
-function initializeModals() {
-    const modalTriggers = document.querySelectorAll('[data-bs-toggle="modal"]');
-    
-    modalTriggers.forEach(trigger => {
-        trigger.addEventListener('click', function(e) {
-            e.preventDefault();
+    fetch('/add-to-cart', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('محصول به سبد خرید اضافه شد', 'success');
+            updateCartBadge(data.cart_count);
             
-            const targetModal = document.querySelector(this.getAttribute('data-bs-target'));
-            if (targetModal) {
-                showModal(targetModal);
+            // Animate the add to cart button
+            const btn = event.target.closest('.btn');
+            if (btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>اضافه شد!';
+                btn.classList.add('btn-success');
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.disabled = false;
+                }, 2000);
             }
-        });
-    });
-    
-    // Close modal when clicking outside
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal')) {
-            hideModal(e.target);
+        } else {
+            showNotification(data.message || 'خطا در افزودن به سبد خرید', 'error');
         }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const openModal = document.querySelector('.modal.show');
-            if (openModal) {
-                hideModal(openModal);
-            }
-        }
+    })
+    .catch(error => {
+        showNotification('خطا در ارتباط با سرور', 'error');
     });
 }
 
-function showModal(modal) {
-    modal.classList.add('show');
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function hideModal(modal) {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Tooltips functionality
-function initializeTooltips() {
-    const tooltipTriggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    
-    tooltipTriggers.forEach(trigger => {
-        trigger.addEventListener('mouseenter', function() {
-            showTooltip(this);
-        });
-        
-        trigger.addEventListener('mouseleave', function() {
-            hideTooltip(this);
-        });
-    });
-}
-
-function showTooltip(element) {
-    const tooltipText = element.getAttribute('data-bs-title') || element.getAttribute('title');
-    
-    if (tooltipText) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tooltip-custom';
-        tooltip.textContent = tooltipText;
-        
-        document.body.appendChild(tooltip);
-        
-        const rect = element.getBoundingClientRect();
-        tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
-        tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
-        
-        element._tooltip = tooltip;
+// Update cart badge
+function updateCartBadge(count) {
+    const badge = document.querySelector('.badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.animation = 'pulse 0.5s ease';
     }
 }
 
-function hideTooltip(element) {
-    if (element._tooltip) {
-        element._tooltip.remove();
-        element._tooltip = null;
-    }
-}
-
-// Scroll effects
-function initializeScrollEffects() {
-    const scrollElements = document.querySelectorAll('.scroll-animate');
-    
-    if (scrollElements.length > 0) {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
-                }
-            });
-        });
-        
-        scrollElements.forEach(el => observer.observe(el));
-    }
-    
-    // Back to top button
-    const backToTopBtn = document.querySelector('.back-to-top');
-    if (backToTopBtn) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 300) {
-                backToTopBtn.style.display = 'block';
-            } else {
-                backToTopBtn.style.display = 'none';
-            }
-        });
-        
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-}
-
-// Lazy loading
-function initializeLazyLoading() {
-    const lazyImages = document.querySelectorAll('img[data-src]');
-    
-    if (lazyImages.length > 0) {
-        const imageObserver = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        lazyImages.forEach(img => imageObserver.observe(img));
-    }
-}
-
-// Persian number formatting
-function formatPersianNumbers() {
-    const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    
-    const priceElements = document.querySelectorAll('.price, .persian-numbers');
-    
-    priceElements.forEach(element => {
-        let text = element.textContent;
-        
-        englishNumbers.forEach((num, index) => {
-            text = text.replace(new RegExp(num, 'g'), persianNumbers[index]);
-        });
-        
-        element.textContent = text;
-    });
-}
-
-// RTL-specific functionality
-function initializeRTLSupport() {
-    // Fix carousel direction for RTL
-    const carousels = document.querySelectorAll('.carousel');
-    carousels.forEach(carousel => {
-        carousel.setAttribute('dir', 'rtl');
-    });
-    
-    // Fix dropdown positioning
-    const dropdowns = document.querySelectorAll('.dropdown-menu');
-    dropdowns.forEach(dropdown => {
-        dropdown.style.left = 'auto';
-        dropdown.style.right = '0';
-    });
-}
-
-// Utility functions
-function formatPrice(price) {
-    return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fa-IR');
-}
-
+// Notification system
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
     notification.style.cssText = `
         top: 20px;
-        right: 20px;
+        left: 20px;
         z-index: 9999;
-        max-width: 400px;
+        min-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: none;
+        border-radius: 12px;
     `;
     
     notification.innerHTML = `
         ${message}
-        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
     
     document.body.appendChild(notification);
     
-    // Auto-hide after 5 seconds
+    // Auto remove after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
-            notification.remove();
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 150);
         }
     }, 5000);
 }
 
-// Local storage helpers
-function saveToLocalStorage(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-        console.error('Error saving to localStorage:', e);
+// Price formatting utility
+function formatPrice(price) {
+    return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
+}
+
+// Loading state management
+function setLoadingState(element, isLoading = true) {
+    if (isLoading) {
+        element.disabled = true;
+        element.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>در حال پردازش...';
+    } else {
+        element.disabled = false;
+        // Restore original content
     }
 }
 
-function loadFromLocalStorage(key) {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : null;
-    } catch (e) {
-        console.error('Error loading from localStorage:', e);
-        return null;
-    }
-}
-
-// Performance optimization
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function throttle(func, limit) {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
+// Add to favorites functionality
+function toggleFavorite(productId) {
+    fetch('/toggle-favorite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const heartIcon = event.target.closest('button').querySelector('i');
+            if (data.is_favorite) {
+                heartIcon.classList.remove('far');
+                heartIcon.classList.add('fas', 'text-danger');
+                showNotification('به علاقه‌مندی‌ها اضافه شد', 'success');
+            } else {
+                heartIcon.classList.remove('fas', 'text-danger');
+                heartIcon.classList.add('far');
+                showNotification('از علاقه‌مندی‌ها حذف شد', 'info');
+            }
         }
-    };
+    })
+    .catch(error => {
+        showNotification('خطا در عملیات', 'error');
+    });
 }
 
-// Export for global use
-window.SupplementStore = {
-    formatPrice,
-    formatDate,
-    showNotification,
-    saveToLocalStorage,
-    loadFromLocalStorage,
-    debounce,
-    throttle
-};
+// Lazy loading for images
+function initializeLazyLoading() {
+    const images = document.querySelectorAll('img[data-src]');
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+
+    images.forEach(img => imageObserver.observe(img));
+}
+
+// Initialize lazy loading when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeLazyLoading);
