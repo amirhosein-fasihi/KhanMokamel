@@ -126,16 +126,20 @@ function initializeSmoothScrolling() {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             // Skip empty hrefs or just '#'
-            if (!href || href === '#') {
+            if (!href || href === '#' || href.length <= 1) {
                 return;
             }
             e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+            try {
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } catch (error) {
+                console.warn('Invalid selector:', href);
             }
         });
     });
@@ -457,26 +461,7 @@ function safeQuerySelector(selector) {
     }
 }
 
-// Replace direct element access with safe selection
-function initializeProductGridToggle() {
-    const gridBtn = safeQuerySelector('#gridView');
-    const listBtn = safeQuerySelector('#listView');
-    const productContainer = safeQuerySelector('.products-grid');
 
-    if (gridBtn && listBtn && productContainer) {
-        gridBtn.addEventListener('click', () => {
-            setGridView(true);
-            gridBtn.classList.add('active');
-            listBtn.classList.remove('active');
-        });
-
-        listBtn.addEventListener('click', () => {
-            setGridView(false);
-            listBtn.classList.add('active');
-            gridBtn.classList.remove('active');
-        });
-    }
-}
 
 // Mobile-specific optimizations (navbar toggle disabled)
 document.addEventListener('DOMContentLoaded', function() {
