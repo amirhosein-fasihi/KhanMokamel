@@ -110,8 +110,9 @@
                     {% endif %}
                     
                     <div class="position-relative overflow-hidden">
-                        <img src="{{ product.image_url or 'https://pixabay.com/get/g18a6e1b14272ece817780f51cfb0461b5c186cc89b62c6ac512723b0d2abf7c1117f5341241556f18b25b1d09ceb5d728219d76750b15b216e75493b9fa1e0a2_1280.jpg' }}" 
-                             class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                        <img src="{% if product.image_url.startswith('/static/') %}{{ url_for('static', filename=product.image_url[8:]) }}{% else %}{{ product.image_url }}{% endif %}" 
+                             class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;"
+                             onerror="this.src='{{ url_for('static', filename='images/logo.jpg') }}'">
                     </div>
                     
                     <div class="card-body d-flex flex-column">
