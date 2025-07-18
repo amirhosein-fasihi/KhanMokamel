@@ -48,14 +48,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Fixed Top Navigation -->
-    <nav class="fixed-top-menu">
+    <!-- Top Navigation -->
+    <nav class="top-menu">
         <div class="container-fluid">
             <div class="d-flex align-items-center justify-content-between">
                 <!-- Logo -->
                 <a class="brand-logo" href="{{ url_for('index') }}">
-                    <i class="fas fa-dumbbell me-2"></i>
-                    Khan sup
+                    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo" class="logo-image">
                 </a>
                 
                 <!-- Search Bar -->

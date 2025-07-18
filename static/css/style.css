@@ -73,7 +73,6 @@
 body {
     background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     line-height: 1.7;
-    padding-top: 80px; /* Space for fixed top menu */
     padding-bottom: 80px; /* Space for fixed bottom menu */
     direction: rtl;
     text-align: right;
@@ -2255,43 +2254,41 @@ footer a:hover {
     }
 }
 
-/* ===== FIXED TOP MENU ===== */
-.fixed-top-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+/* ===== TOP MENU ===== */
+.top-menu {
     height: 80px;
     background: rgba(99, 102, 241, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
-.fixed-top-menu .container-fluid {
+.top-menu .container-fluid {
     height: 100%;
     padding: 0 20px;
 }
 
-.fixed-top-menu .d-flex {
+.top-menu .d-flex {
     height: 100%;
 }
 
 /* Brand Logo */
 .brand-logo {
-    color: white;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.2rem;
     display: flex;
     align-items: center;
     transition: var(--transition);
+    text-decoration: none;
 }
 
 .brand-logo:hover {
-    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
+    transform: scale(1.05);
+}
+
+.logo-image {
+    height: 50px;
+    width: auto;
+    border-radius: 8px;
 }
 
 /* Search Container */
@@ -2464,7 +2461,7 @@ footer a:hover {
 
 /* Main Content Adjustments */
 .main-content {
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 80px);
     padding: 20px 0;
 }
 
@@ -2501,17 +2498,16 @@ footer a:hover {
         margin-left: 8px;
     }
     
-    .fixed-top-menu,
+    .top-menu,
     .fixed-bottom-menu {
         height: 70px;
     }
     
     body {
-        padding-top: 70px;
         padding-bottom: 70px;
     }
     
     .main-content {
-        min-height: calc(100vh - 140px);
+        min-height: calc(100vh - 70px);
     }
 }
