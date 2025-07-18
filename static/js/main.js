@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSmoothScrolling();
     initializeTooltips();
     initializeFormValidation();
+    initializeCartUpdates();
 });
 
 // Scroll-triggered animations
@@ -55,6 +56,8 @@ function initializeProductGridToggle() {
 
 function setGridView(isGrid) {
     const products = document.querySelectorAll('.product-item');
+    if (products.length === 0) return;
+    
     products.forEach(product => {
         if (isGrid) {
             product.className = 'col-md-6 col-lg-4 product-item mb-4';
@@ -421,6 +424,54 @@ function initializeLazyLoading() {
 
 // Initialize lazy loading when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeLazyLoading);
+
+// Cart update functionality
+function initializeCartUpdates() {
+    // Update cart badge when items are added
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Animate cart badge when item is added
+            const cartBadge = document.querySelector('.cart-badge');
+            if (cartBadge) {
+                cartBadge.style.animation = 'none';
+                cartBadge.offsetHeight; // Trigger reflow
+                cartBadge.style.animation = 'pulse 0.5s ease-out';
+            }
+        });
+    });
+}
+
+// Safe element selection to prevent null errors
+function safeQuerySelector(selector) {
+    try {
+        return document.querySelector(selector);
+    } catch (error) {
+        console.warn('Element not found:', selector);
+        return null;
+    }
+}
+
+// Replace direct element access with safe selection
+function initializeProductGridToggle() {
+    const gridBtn = safeQuerySelector('#gridView');
+    const listBtn = safeQuerySelector('#listView');
+    const productContainer = safeQuerySelector('.products-grid');
+
+    if (gridBtn && listBtn && productContainer) {
+        gridBtn.addEventListener('click', () => {
+            setGridView(true);
+            gridBtn.classList.add('active');
+            listBtn.classList.remove('active');
+        });
+
+        listBtn.addEventListener('click', () => {
+            setGridView(false);
+            listBtn.classList.add('active');
+            gridBtn.classList.remove('active');
+        });
+    }
+}
 
 // Mobile-specific optimizations
 document.addEventListener('DOMContentLoaded', function() {

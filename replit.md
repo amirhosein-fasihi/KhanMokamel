@@ -33,6 +33,9 @@ A Flask-based e-commerce application for selling bodybuilding supplements with P
 - Enhanced contrast and readability with proper dark mode color palette
 - Removed external font loading for better performance
 - Switched to system fonts for cleaner and faster loading
+- Enhanced cart button in navbar to always show item count
+- Added animated cart badge with pulse effect for better visibility
+- Fixed JavaScript errors for safer element selection
 
 ## User Preferences
 - Language: Persian (Farsi) with RTL support
