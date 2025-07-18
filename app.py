@@ -1,314 +1,222 @@
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_cors import CORS
-from datetime import datetime
-import uuid
-from database_service import DatabaseService
-from utils.auth import login_required, admin_required
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# This will be imported by main.py - don't create app instance here
 
-# Database service
-db_service = DatabaseService()
+class Base(DeclarativeBase):
+    pass
 
-def register_routes(app):
-    """Register all routes with the Flask app"""
-    
-    @app.route('/')
-def index():
-    """صفحه اصلی فروشگاه"""
-    categories = db_service.get_categories()
-    featured_products = db_service.get_featured_products()
-    return render_template('index.html', categories=categories, products=featured_products)
 
-@app.route('/products')
-def products():
-    """صفحه لیست محصولات"""
-    category_id = request.args.get('category')
-    search_query = request.args.get('search', '')
-    
-    # Convert category_id to int if provided
-    if category_id:
-        try:
-            category_id = int(category_id)
-        except ValueError:
-            category_id = None
-    
-    # Get products with filtering
-    if search_query:
-        all_products = db_service.search_products(search_query)
-    else:
-        all_products = db_service.get_products(category_id=category_id)
-    
-    categories = db_service.get_categories()
-    
-    return render_template('products.html', products=all_products, categories=categories, 
-                         selected_category=str(category_id) if category_id else None, search_query=search_query)
+db = SQLAlchemy(model_class=Base)
 
-@app.route('/product/<int:product_id>')
-def product_detail(product_id):
-    """صفحه جزئیات محصول"""
-    product = db_service.get_product(product_id)
-    if not product:
-        flash('محصول مورد نظر یافت نشد.', 'error')
-        return redirect(url_for('products'))
-    
-    related_products = db_service.get_related_products(int(product['category_id']), product_id)
-    return render_template('product_detail.html', product=product, related_products=related_products)
+# create the app
+app = Flask(__name__)
+app.secret_key = os.environ.get("SESSION_SECRET", "fallback-secret-key")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
 
-@app.route('/add_to_cart', methods=['POST'])
-def add_to_cart():
-    """افزودن محصول به سبد خرید"""
-    product_id = int(request.form.get('product_id'))
-    quantity = int(request.form.get('quantity', 1))
-    
-    product = db_service.get_product(product_id)
-    if not product:
-        flash('محصول مورد نظر یافت نشد.', 'error')
-        return redirect(url_for('products'))
-    
-    # Initialize cart if not exists
-    if 'cart' not in session:
-        session['cart'] = {}
-    
-    # Add or update product in cart (store as string for session compatibility)
-    product_id_str = str(product_id)
-    if product_id_str in session['cart']:
-        session['cart'][product_id_str] += quantity
-    else:
-        session['cart'][product_id_str] = quantity
-    
-    session.modified = True
-    flash(f'{product["name"]} به سبد خرید اضافه شد.', 'success')
-    return redirect(url_for('product_detail', product_id=product_id))
+# configure the database, relative to the app instance folder
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-@app.route('/cart')
-def cart():
-    """صفحه سبد خرید"""
-    cart_items = []
-    total_price = 0
-    
-    if 'cart' in session:
-        for product_id, quantity in session['cart'].items():
-            product = db_service.get_product(int(product_id))
-            if product:
-                final_price = product.get('final_price', product['price'])
-                item_total = final_price * quantity
-                cart_items.append({
-                    'product': product,
-                    'quantity': quantity,
-                    'total': item_total
-                })
-                total_price += item_total
-    
-    return render_template('cart.html', cart_items=cart_items, total_price=total_price)
 
-@app.route('/update_cart', methods=['POST'])
-def update_cart():
-    """بروزرسانی سبد خرید"""
-    product_id = request.form.get('product_id')
-    quantity = int(request.form.get('quantity', 0))
-    
-    if 'cart' in session:
-        if quantity > 0:
-            session['cart'][product_id] = quantity
-        else:
-            session['cart'].pop(product_id, None)
-        session.modified = True
-    
-    return redirect(url_for('cart'))
-
-@app.route('/remove_from_cart/<product_id>')
-def remove_from_cart(product_id):
-    """حذف محصول از سبد خرید"""
-    if 'cart' in session:
-        session['cart'].pop(product_id, None)
-        session.modified = True
-        flash('محصول از سبد خرید حذف شد.', 'info')
-    
-    return redirect(url_for('cart'))
-
-@app.route('/checkout')
-@login_required
-def checkout():
-    """صفحه تسویه حساب"""
-    cart_items = []
-    total_price = 0
-    
-    if 'cart' in session:
-        for product_id, quantity in session['cart'].items():
-            product = db_service.get_product(int(product_id))
-            if product:
-                final_price = product.get('final_price', product['price'])
-                item_total = final_price * quantity
-                cart_items.append({
-                    'product': product,
-                    'quantity': quantity,
-                    'total': item_total
-                })
-                total_price += item_total
-    
-    if not cart_items:
-        flash('سبد خرید شما خالی است.', 'error')
-        return redirect(url_for('cart'))
-    
-    return render_template('checkout.html', cart_items=cart_items, total_price=total_price)
-
-@app.route('/place_order', methods=['POST'])
-@login_required
-def place_order():
-    """ثبت سفارش"""
-    if 'cart' not in session or not session['cart']:
-        flash('سبد خرید شما خالی است.', 'error')
-        return redirect(url_for('cart'))
-    
-    # Get form data
-    shipping_info = {
-        'shipping_name': request.form.get('shipping_name', session.get('user_name', '')),
-        'shipping_phone': request.form.get('shipping_phone'),
-        'shipping_address': request.form.get('shipping_address'),
-        'shipping_city': request.form.get('shipping_city'),
-        'shipping_postal_code': request.form.get('shipping_postal_code'),
-        'notes': request.form.get('notes', '')
-    }
-    payment_method = request.form.get('payment_method', 'cash_on_delivery')
-    
-    # Prepare cart items for order creation
-    cart_items = []
-    for product_id, quantity in session['cart'].items():
-        cart_items.append({
-            'product_id': int(product_id),
-            'quantity': quantity
-        })
+def init_sample_data():
+    """Initialize database with sample data"""
+    from models import Category, Product, User, db
     
     try:
-        # Create order using database service
-        order = db_service.create_order(
-            user_id=int(session['user_id']),
-            cart_items=cart_items,
-            shipping_info=shipping_info,
-            payment_method=payment_method
+        # Create categories
+        categories = [
+            {
+                'name': 'پروتئین وی',
+                'description': 'پروتئین‌های سریع الجذب برای رشد عضله',
+                'icon': 'fas fa-dumbbell'
+            },
+            {
+                'name': 'گینر',
+                'description': 'مکمل‌های افزایش وزن و حجم عضلانی',
+                'icon': 'fas fa-weight'
+            },
+            {
+                'name': 'کراتین',
+                'description': 'مکمل‌های افزایش قدرت و انرژی',
+                'icon': 'fas fa-bolt'
+            },
+            {
+                'name': 'ویتامین و مواد معدنی',
+                'description': 'ویتامین‌ها و مواد معدنی ضروری',
+                'icon': 'fas fa-pills'
+            },
+            {
+                'name': 'چربی سوز',
+                'description': 'مکمل‌های کاهش وزن و چربی سوزی',
+                'icon': 'fas fa-fire'
+            },
+            {
+                'name': 'انرژی و پری ورک اوت',
+                'description': 'مکمل‌های افزایش انرژی قبل از تمرین',
+                'icon': 'fas fa-rocket'
+            }
+        ]
+        
+        category_objects = []
+        for cat_data in categories:
+            category = Category(**cat_data)
+            db.session.add(category)
+            category_objects.append(category)
+        
+        db.session.flush()  # To get category IDs
+        
+        # Create products
+        products = [
+            {
+                'name': 'پروتئین وی ایرانی پرو',
+                'description': 'پروتئین وی عالی برای رشد عضله با طعم شکلات',
+                'price': 850000,
+                'discount_price': 720000,
+                'stock': 50,
+                'weight': '2.5 کیلوگرم',
+                'brand': 'ایرانی پرو',
+                'flavor': 'شکلات',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/05/12/11/28/protein-2306687_1280.jpg',
+                'is_featured': True,
+                'rating': 4.5,
+                'review_count': 127,
+                'category': category_objects[0]  # پروتئین وی
+            },
+            {
+                'name': 'سیریوس مس گینر',
+                'description': 'گینر قوی برای افزایش وزن و حجم عضلانی',
+                'price': 1200000,
+                'discount_price': 980000,
+                'stock': 30,
+                'weight': '5 کیلوگرم',
+                'brand': 'سیریوس مس',
+                'flavor': 'وانیل',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/08/26/15/37/fitness-2683044_1280.jpg',
+                'is_featured': True,
+                'rating': 4.7,
+                'review_count': 89,
+                'category': category_objects[1]  # گینر
+            },
+            {
+                'name': 'کراتین مونوهیدرات میکرونایز',
+                'description': 'کراتین خالص برای افزایش قدرت و انرژی',
+                'price': 450000,
+                'stock': 75,
+                'weight': '300 گرم',
+                'brand': 'کیمیا فارما',
+                'flavor': 'بی طعم',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/08/07/14/02/people-2604149_1280.jpg',
+                'is_featured': False,
+                'rating': 4.3,
+                'review_count': 156,
+                'category': category_objects[2]  # کراتین
+            },
+            {
+                'name': 'مولتی ویتامین کامل',
+                'description': 'ویتامین‌های کامل روزانه برای ورزشکاران',
+                'price': 320000,
+                'discount_price': 280000,
+                'stock': 100,
+                'weight': '60 کپسول',
+                'brand': 'ایران داروک',
+                'flavor': '',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/03/29/04/47/vitamins-2184173_1280.jpg',
+                'is_featured': True,
+                'rating': 4.1,
+                'review_count': 203,
+                'category': category_objects[3]  # ویتامین
+            },
+            {
+                'name': 'چربی سوز ترمو',
+                'description': 'مکمل قوی چربی سوزی با L-کارنیتین',
+                'price': 550000,
+                'stock': 40,
+                'weight': '90 کپسول',
+                'brand': 'فیت لایف',
+                'flavor': '',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/08/07/14/02/people-2604149_1280.jpg',
+                'is_featured': False,
+                'rating': 4.0,
+                'review_count': 67,
+                'category': category_objects[4]  # چربی سوز
+            },
+            {
+                'name': 'پری ورک اوت انرژی بوستر',
+                'description': 'انرژی قوی قبل از تمرین با کافئین و آرژنین',
+                'price': 380000,
+                'discount_price': 340000,
+                'stock': 60,
+                'weight': '250 گرم',
+                'brand': 'انرژی پلاس',
+                'flavor': 'آناناس',
+                'image_url': 'https://cdn.pixabay.com/photo/2017/05/12/11/28/protein-2306687_1280.jpg',
+                'is_featured': True,
+                'rating': 4.6,
+                'review_count': 94,
+                'category': category_objects[5]  # پری ورک اوت
+            }
+        ]
+        
+        for prod_data in products:
+            product = Product(**prod_data)
+            db.session.add(product)
+        
+        # Create admin user
+        admin_user = User(
+            email='admin@bodybuilding.ir',
+            full_name='مدیر سیستم',
+            phone='09123456789',
+            is_admin=True
         )
+        admin_user.set_password('admin123')
+        db.session.add(admin_user)
         
-        # Clear cart
-        session.pop('cart', None)
-        session.modified = True
+        # Create sample user
+        sample_user = User(
+            email='user@example.com',
+            full_name='علی احمدی',
+            phone='09987654321',
+            address='تهران، خیابان ولیعصر، پلاک 100',
+            city='تهران',
+            postal_code='1234567890',
+            is_admin=False
+        )
+        sample_user.set_password('user123')
+        db.session.add(sample_user)
         
-        flash(f'سفارش شما با موفقیت ثبت شد. شماره سفارش: {order["order_number"]}', 'success')
-        return redirect(url_for('account'))
+        db.session.commit()
+        print("Sample data initialized successfully!")
         
     except Exception as e:
-        logging.error(f"Error placing order: {e}")
-        flash('خطا در ثبت سفارش. لطفا دوباره تلاش کنید.', 'error')
-        return redirect(url_for('checkout'))
+        print(f"Error initializing sample data: {e}")
+        db.session.rollback()
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    """صفحه ورود"""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        user = db_service.verify_user_password(email, password)
-        if user:
-            session['user_id'] = user['id']
-            session['user_email'] = user['email']
-            session['user_name'] = user['full_name']
-            session['is_admin'] = user.get('is_admin', False)
-            
-            flash('با موفقیت وارد شدید.', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('ایمیل یا رمز عبور اشتباه است.', 'error')
+
+# initialize the app with the extension, flask-sqlalchemy >= 3.0.x
+db.init_app(app)
+
+with app.app_context():
+    # Make sure to import the models here or their tables won't be created
+    import models  # noqa: F401
     
-    return render_template('login.html')
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    """صفحه ثبت نام"""
-    if request.method == 'POST':
-        full_name = request.form.get('name')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        phone = request.form.get('phone', '')
-        
-        # Validation
-        if password != confirm_password:
-            flash('رمز عبور و تکرار آن مطابقت ندارند.', 'error')
-            return render_template('register.html')
-        
-        if db_service.get_user_by_email(email):
-            flash('این ایمیل قبلاً ثبت شده است.', 'error')
-            return render_template('register.html')
-        
-        try:
-            # Create user using database service
-            user = db_service.create_user(
-                email=email,
-                password=password,
-                full_name=full_name,
-                phone=phone
-            )
-            
-            flash('ثبت نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.', 'success')
-            return redirect(url_for('login'))
-            
-        except Exception as e:
-            logging.error(f"Error creating user: {e}")
-            flash('خطا در ثبت نام. لطفا دوباره تلاش کنید.', 'error')
+    db.create_all()
     
-    return render_template('register.html')
+    # Initialize sample data if tables are empty
+    from models import Category, Product, User, Order, OrderItem
+    if not Category.query.first():
+        init_sample_data()
 
-@app.route('/logout')
-def logout():
-    """خروج از حساب کاربری"""
-    session.clear()
-    flash('با موفقیت خارج شدید.', 'info')
-    return redirect(url_for('index'))
-
-@app.route('/account')
-@login_required
-def account():
-    """صفحه حساب کاربری"""
-    user_orders = db_service.get_orders(user_id=int(session['user_id']))
-    return render_template('account.html', orders=user_orders)
-
-@app.route('/admin')
-@admin_required
-def admin():
-    """پنل مدیریت"""
-    stats = db_service.get_dashboard_stats()
-    recent_orders = db_service.get_orders()[:10]  # First 10 orders (most recent due to ORDER BY)
-    return render_template('admin.html', stats=stats, recent_orders=recent_orders)
-
-@app.route('/admin/update_order_status', methods=['POST'])
-@admin_required
-def update_order_status():
-    """بروزرسانی وضعیت سفارش"""
-    order_id = int(request.form.get('order_id'))
-    new_status = request.form.get('status')
-    
-    if db_service.update_order_status(order_id, new_status):
-        flash('وضعیت سفارش بروزرسانی شد.', 'success')
-    else:
-        flash('خطا در بروزرسانی وضعیت سفارش.', 'error')
-    
-    return redirect(url_for('admin'))
-
-@app.errorhandler(404)
-def not_found(error):
-    """صفحه 404"""
-    return render_template('base.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    """صفحه خطای سرور"""
-    return render_template('base.html'), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Register routes
+    from routes import register_routes
+    register_routes(app)

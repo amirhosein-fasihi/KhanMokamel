@@ -3,16 +3,8 @@ Database models for Persian Bodybuilding Supplements E-commerce Store
 """
 import os
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
+from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-db = SQLAlchemy(model_class=Base)
 
 
 class User(db.Model):
