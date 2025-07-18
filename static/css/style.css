@@ -2286,7 +2286,6 @@ footer a:hover {
     font-size: 1.2rem;
     display: flex;
     align-items: center;
-    min-width: 280px;
     transition: var(--transition);
 }
 
@@ -2299,7 +2298,7 @@ footer a:hover {
 .search-container {
     flex: 1;
     max-width: 600px;
-    margin: 0 20px;
+    margin-left: 20px;
 }
 
 .search-form {
@@ -2343,31 +2342,7 @@ footer a:hover {
     color: white;
 }
 
-/* User Actions */
-.user-actions {
-    display: flex;
-    align-items: center;
-    min-width: 150px;
-    justify-content: flex-end;
-}
-
-.user-menu-toggle,
-.login-btn {
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    transition: var(--transition);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.user-menu-toggle:hover,
-.login-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    text-decoration: none;
-}
+/* Remove user actions from top menu */
 
 /* ===== FIXED BOTTOM MENU ===== */
 .fixed-bottom-menu {
@@ -2445,6 +2420,48 @@ footer a:hover {
     animation: pulse 2s infinite;
 }
 
+/* Bottom Menu Dropdown */
+.bottom-menu-item.dropdown {
+    position: relative;
+}
+
+.bottom-menu-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: var(--transition);
+    position: relative;
+    min-width: 80px;
+}
+
+.bottom-menu-link:hover {
+    color: var(--primary-light);
+    background: rgba(99, 102, 241, 0.1);
+    text-decoration: none;
+}
+
+.bottom-menu-link i {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.bottom-menu-link span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.bottom-menu-item .dropdown-menu {
+    bottom: 100%;
+    margin-bottom: 5px;
+    top: auto;
+    transform: none;
+}
+
 /* Main Content Adjustments */
 .main-content {
     min-height: calc(100vh - 160px);
@@ -2454,16 +2471,11 @@ footer a:hover {
 /* Responsive Design */
 @media (max-width: 768px) {
     .brand-logo {
-        min-width: 200px;
         font-size: 1rem;
     }
     
     .search-container {
-        margin: 0 10px;
-    }
-    
-    .user-actions {
-        min-width: 120px;
+        margin-left: 10px;
     }
     
     .bottom-menu-item {
@@ -2482,12 +2494,11 @@ footer a:hover {
 
 @media (max-width: 576px) {
     .brand-logo {
-        min-width: 150px;
         font-size: 0.9rem;
     }
     
     .search-container {
-        margin: 0 8px;
+        margin-left: 8px;
     }
     
     .fixed-top-menu,
