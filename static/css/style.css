@@ -2287,12 +2287,13 @@ footer a:hover {
 
 .logo-image {
     height: 50px;
-    width: auto;
+    width: 50px;
     border-radius: 8px;
     background: white;
-    padding: 5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    object-fit: contain;
 }
 
 /* Search Container */
